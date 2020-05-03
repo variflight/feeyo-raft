@@ -1,0 +1,142 @@
+syntax = "proto3";
+package raft;
+
+option java_package = "com.feeyo.raft.proto";
+option java_outer_classname = "Raftpb";
+option optimize_for = SPEED;
+
+//
+// Generate code using MessageLite and the lite runtime.
+// https://github.com/protocolbuffers/protobuf/pull/6699
+
+enum EntryType {
+    EntryNormal = 0;
+    EntryConfChange = 1;
+}
+
+
+// The entry is a type of change that needs to be applied. It contains two data fields.
+// While the fields are built into the model; their usage is determined by the entry_type.
+//
+// For normal entries, the data field should contain the data change that should be applied.
+// The context field can be used for any contextual data that might be relevant to the
+// application of the data.
+//
+// For configuration changes, the data will contain the ConfChange message and the
+// context will provide anything needed to assist the configuration change. The context
+// if for the user to set and use in this case.
+message Entry {
+    EntryType entry_type = 1;
+    uint64 term = 2;
+    uint64 index = 3;
+    bytes data = 4;
+    bytes context = 6;
+    string cbkey = 7;				// 标示 client callback key
+}
+
+message SnapshotMetadata {
+    ConfState conf_state = 1;			// 最后的ConfState
+    uint64 index = 2;					// 最后apply的log entry的index
+    uint64 term = 3;					// 最后apply的log entry的term
+}
+
+message SnapshotChunk {
+	uint64 seqNo = 1;					// 第几个块
+	bytes data = 2;						// 块数据
+	bool last = 3;						// 是否最后一块数据
+}
+
+message Snapshot {
+    SnapshotMetadata metadata = 1;
+    SnapshotChunk chunk = 2;
+}
+
+enum MessageType {
+    MsgHup = 0;							// 不用于节点间通信，仅用于发送给本节点让本节点进行选举
+    MsgBeat = 1;						// 不用于节点间通信，仅用于leader节点在 HeartBeat 定时器到期时向集群中其他节点发送心跳消息
+    MsgPropose = 2;						// 使用者请求，propose数据
+    MsgAppend = 3;						// 用于leader向集群中其他节点同步Entries
+    MsgAppendResponse = 4;				// 集群中其他节点针对leader的 MsgAppend/MsgSnapshot 消息的应答消息
+    MsgRequestVote = 5;					// 进行新一轮的选举，节点请求投票给自己
+    MsgRequestVoteResponse = 6;			// 投票应答消息
+    MsgSnapshot = 7;					// 用于leader向集群中其他节点同步Snapshot
+    MsgHeartbeat = 8;					// 用于leader向follower发送心跳消息
+    MsgHeartbeatResponse = 9;			// 用于follower向leader应答心跳消息
+    MsgUnreachable = 10;				// 使用者向raft库汇报某个节点当前已不可达
+    MsgSnapStatus = 11;					// 使用者向raft库汇报某个节点当前接收快照状态
+    MsgCheckQuorum = 12;				// 用于leader检查集群可用性的消息
+    MsgTransferLeader = 13;				// 用于迁移leader
+    MsgTimeoutNow = 14;					// leader迁移时，当新旧leader的日志数据同步后，旧leader向新leader发送该消息通知可以进行迁移了
+    MsgReadIndex = 15;					// 读一致性消息
+    MsgReadIndexResp = 16;				// 读一致性的应答消息
+    MsgRequestPreVote = 17;				// 预投票消息
+    MsgRequestPreVoteResponse = 18;		// 预投票应答消息
+    MsgBroadcast = 19;					// 用于 follower replication
+    MsgBroadcastResp = 20;
+}
+
+message Commission {
+    MessageType msg_type = 1;
+    uint64 to = 2;
+    // Same as `index` in `Message`
+    uint64 last_index = 3;
+    uint64 log_term = 4;
+}
+
+
+message Message {
+    MessageType msg_type = 1;			// 消息类型
+    uint64 to = 2;						// 消息接收者的节点id
+    uint64 from = 3;					// 消息发送者的节点id
+    uint64 term = 4;					// 任期
+    uint64 log_term = 5;				// 日志所处的任期
+    uint64 index = 6;					// 日志索引id，用于节点向leader汇报自己已经commit的日志id
+    repeated Entry entries = 7;			// 日志条目数组
+    uint64 commit = 8;					// 提交日志索引
+    uint64 lcommit = 9;					// leader 已提交的日志索引
+    Snapshot snapshot = 10;				// 快照， 因为快照数据可能很大，通常在 last chunk 后，内部重新构造一个snapshot，只赋值 metadata
+    bool reject = 11;					// 是否拒绝
+    uint64 reject_hint = 12;			// 拒绝同步日志请求时返回的当前节点日志id，用于被拒绝方快速定位到下一次合适的同步日志位置
+    bytes context = 13;					// 上下文数据
+
+    // Only used in `MsgAppend` and `MsgSnapshot`
+    repeated Commission commissions = 14;
+    // Only used in `MsgBroadcast` when the delegate and all the other members need snapshot
+    bool is_snapshot = 15;
+}
+
+
+
+// HardState 保存着该 Raft 节点最后一次保存的 term 信息，之前 vote 哪一个节点，以及已经 commit 的 log index
+message HardState {
+    uint64 term = 1;
+    uint64 vote = 2;
+    uint64 commit = 3;
+    uint64 applied = 4;
+}
+
+//ConfState 则是保存着 Raft 集群所有的节点 ID 信息
+message ConfState {
+    repeated uint64 nodes = 1;
+    repeated uint64 learners = 2;
+}
+
+enum ConfChangeType {
+    AddNode    = 0;
+    RemoveNode = 1;
+    AddLearnerNode = 2;
+}
+
+message ConfChange {
+    uint64 id = 1;
+    ConfChangeType change_type = 2;
+    //
+    // Used in `AddNode`, `RemoveNode`, and `AddLearnerNode`.
+    uint64 node_id = 3;
+    bytes context = 4;
+}
+
+message KeyValue {
+    bytes key = 1;
+    bytes value = 2;
+}
