@@ -9,8 +9,8 @@ import com.feeyo.net.codec.protobuf.ProtobufDecoder;
 import com.feeyo.net.codec.protobuf.ProtobufEncoder;
 import com.feeyo.net.nio.NetConfig;
 import com.feeyo.net.nio.NetSystem;
-import com.feeyo.net.nio.buffer.BufferPool;
-import com.feeyo.net.nio.buffer.bucket.BucketBufferPool;
+import com.feeyo.buffer.BufferPool;
+import com.feeyo.buffer.bucket.BucketBufferPool;
 import com.feeyo.net.nio.util.ExecutorUtil;
 import com.feeyo.net.nio.util.timer.HashedWheelTimer;
 import com.feeyo.net.nio.util.timer.Timeout;
@@ -225,7 +225,7 @@ public class RaftGroupClusterTest {
 		logger4j.setLevel(org.apache.log4j.Level.toLevel("INFO")); // DEBUG INFO ERROR
 		
 		//
-		BufferPool bufferPool = new BucketBufferPool(41943040, 83886080, 16384, 1024,new int[] { 1024 }, 32768);
+		BufferPool bufferPool = new BucketBufferPool(41943040, 83886080,new int[] { 1024 });
 		new NetSystem(bufferPool, ExecutorUtil.create("BusinessExecutor-", 2),ExecutorUtil.create("TimerExecutor-", 2),
 				ExecutorUtil.createScheduled("TimerSchedExecutor-", 1));
 		//

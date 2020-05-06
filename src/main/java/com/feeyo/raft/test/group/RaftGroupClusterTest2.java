@@ -4,8 +4,8 @@ import com.feeyo.net.codec.protobuf.ProtobufDecoder;
 import com.feeyo.net.codec.protobuf.ProtobufEncoder;
 import com.feeyo.net.nio.NetConfig;
 import com.feeyo.net.nio.NetSystem;
-import com.feeyo.net.nio.buffer.BufferPool;
-import com.feeyo.net.nio.buffer.bucket.BucketBufferPool;
+import com.feeyo.buffer.BufferPool;
+import com.feeyo.buffer.bucket.BucketBufferPool;
 import com.feeyo.net.nio.util.ExecutorUtil;
 import com.feeyo.raft.*;
 import com.feeyo.raft.Errors.RaftException;
@@ -89,8 +89,7 @@ public class RaftGroupClusterTest2 {
 
     public static void main(String[] args) throws Throwable {
         //
-        BufferPool bufferPool = new BucketBufferPool(1024 * 1024 * 40, 1024 * 1024 * 80, //
-                1024 * 16, 1024, new int[]{1024}, 1024 * 32);
+        BufferPool bufferPool = new BucketBufferPool(1024 * 1024 * 40, 1024 * 1024 * 80, new int[]{1024});
 
         //
         new NetSystem(bufferPool, ExecutorUtil.create("BusinessExecutor-", 2), //

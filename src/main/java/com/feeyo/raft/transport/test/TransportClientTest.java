@@ -4,8 +4,8 @@ import java.io.IOException;
 
 import com.feeyo.net.nio.NetConfig;
 import com.feeyo.net.nio.NetSystem;
-import com.feeyo.net.nio.buffer.BufferPool;
-import com.feeyo.net.nio.buffer.bucket.BucketBufferPool;
+import com.feeyo.buffer.BufferPool;
+import com.feeyo.buffer.bucket.BucketBufferPool;
 import com.feeyo.net.nio.util.ExecutorUtil;
 import com.feeyo.net.nio.util.TimeUtil;
 import com.feeyo.raft.Peer;
@@ -27,11 +27,7 @@ public class TransportClientTest {
 		// 初始化 network & buffer 配置
         long minBufferSize = 52428800;
         long maxBufferSize =  104857600;
-
-        int decomposeBufferSize = 1024;
-        int minChunkSize = 0;
-        int maxChunkSize = 32768;
-        int[] increments = new int[]{1024};
+        int[] chunkSizes = new int[]{1024, 2048, 4096, 8192};
 
         int tpCoreThreads = 5;
         int tpMaxThreads = 50;
@@ -41,8 +37,7 @@ public class TransportClientTest {
         int socketSoRcvbuf =  32768;
         int socketSoSndbuf = 32768;
 		
-		BufferPool bufferPool = new BucketBufferPool(minBufferSize, maxBufferSize, decomposeBufferSize, minChunkSize,
-				increments, maxChunkSize);
+		BufferPool bufferPool = new BucketBufferPool(minBufferSize, maxBufferSize, chunkSizes);
 		
         // 构造 boss & time threadPool
         //
