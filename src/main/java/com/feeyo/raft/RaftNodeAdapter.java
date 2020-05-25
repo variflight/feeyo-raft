@@ -28,7 +28,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         if (local.isPriorityNotElected()) 
             return false;
 
-        // 如果此节点禁用优先级选择，返回进行选择
+        // Priority <= -1, 如果此节点禁用优先级选择，返回进行选择
         if (local.isPriorityDisabled()) 
             return true;
         //
