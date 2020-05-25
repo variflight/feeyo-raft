@@ -51,7 +51,6 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         return local.getPriority() >= this.targetPriority;
 	}
 	
-	@Override
 	public int getNodeTargetPriority() {
 		return this.targetPriority;
 	}

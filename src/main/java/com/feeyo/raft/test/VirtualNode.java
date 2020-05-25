@@ -329,10 +329,4 @@ public class VirtualNode implements RaftNodeListener {
 		return true;
 	}
 
-	@Override
-	public int getNodeTargetPriority() {
-		return 0;
-	}
-
-
 }
