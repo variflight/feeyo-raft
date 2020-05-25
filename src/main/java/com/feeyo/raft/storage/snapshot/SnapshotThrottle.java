@@ -1,18 +1,10 @@
 package com.feeyo.raft.storage.snapshot;
 
 /**
- * Snapshot throttling during heavy disk reading/writing
- *
- * @author dennis
+ * 磁盘读/写期间的快照限制
  */
 public interface SnapshotThrottle {
-
-    /**
-     * Get available throughput in bytes after throttled
-     * Must be thread-safe
-     *
-     * @param bytes expect size
-     * @return available size
-     */
+	//
+    // 限制后的可用吞吐量
     long throttledByThroughput(final long bytes);
 }
