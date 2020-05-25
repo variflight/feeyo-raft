@@ -166,6 +166,9 @@ public class RaftGroup extends RaftNodeAdapter {
         this.callbackRegistry = new CallbackRegistry( raftStatistics );
         this.storage = new FileStorage( storageDir );
         //
+		// initially set to max(priority of all nodes)
+        this.targetPriority = getMaxPriorityOfNodes();
+        this.electionTimeoutCounter = 0;
     }
 
     //
