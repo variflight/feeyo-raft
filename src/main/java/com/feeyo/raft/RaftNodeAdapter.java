@@ -14,16 +14,16 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
 	@Override
 	public boolean isAllowElection() {
 		//
-		// Priority 0 is a special value so that a node will never participate in election.
+		// Priority 0，节点永远不会参与选举
 		Peer local = this.getPeer();
         if (local.isPriorityNotElected()) 
             return false;
 
-        // If this nodes disable priority election, then it can make a election.
+        // 如果此节点禁用优先级选择，返回进行选择
         if (local.isPriorityDisabled()) 
             return true;
         //
-        // If current node's priority < target_priority, it does not initiate leader,
+        // If current node's priority < target_priority, it does not initiate leader, 
         // election and waits for the next election timeout.
         if (local.getPriority() < this.targetPriority) {
             this.electionTimeoutCounter++;

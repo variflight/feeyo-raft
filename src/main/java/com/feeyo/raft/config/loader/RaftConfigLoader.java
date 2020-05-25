@@ -81,7 +81,6 @@ public class RaftConfigLoader {
 			cfg.setTpCoreThreads(tpCoreThreads);
 			cfg.setTpMaxThreads(tpMaxThreads);
 			cfg.setTpQueueCapacity(tpQueueCapacity);
-
 			return cfg;
 		} catch (Exception e) {
 			LOGGER.error("load raft cfg err:", e);
