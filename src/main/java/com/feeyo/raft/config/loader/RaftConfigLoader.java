@@ -87,7 +87,7 @@ public class RaftConfigLoader {
 	}
 	
 	private static Map<String, String> getPropertyMapOfXml(String uri) throws Exception {
-		
+		//
 		Map<String, String> map = new HashMap<String, String>();
 		//
 		NodeList propertyNodes = loadXmlDoc(uri).getElementsByTagName("property");
@@ -100,7 +100,6 @@ public class RaftConfigLoader {
 				map.put(key, value);
 			}
 		}
-		
 		return map;
 	}
 
