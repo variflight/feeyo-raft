@@ -769,6 +769,7 @@ public class Raft {
 			newTerm = this.term + 1;
 			
 		} else {
+			//
 			// 调用 becomeCandidate 进入 candidate 状态
 			becomeCandidate();
 			//

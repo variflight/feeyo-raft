@@ -32,6 +32,8 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         if (local.isPriorityDisabled()) 
             return true;
         //
+        LOGGER.info("self={}, priority {}, target_priority: {}.", getPeer().getId(), local.getPriority(), this.targetPriority);
+        //
         // If current node's priority < target_priority, it does not initiate leader,
         // election and waits for the next election timeout.
         if (local.getPriority() < this.targetPriority) {
