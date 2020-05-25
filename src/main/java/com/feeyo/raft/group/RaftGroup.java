@@ -1092,6 +1092,7 @@ public class RaftGroup extends RaftNodeAdapter {
         return gMessages;
     }
     
+    ///
     
 	@Override
 	public PeerSet getPeerSet() {
@@ -1102,6 +1103,13 @@ public class RaftGroup extends RaftNodeAdapter {
 	public Peer getPeer() {
 		return getPeerSet().get( getId() );
 	}
+	
+	@Override
+	public int getDecayPriorityGap() {
+		return cfg.getDecayPriorityGap();
+	}
+
+	///
 
     public long getId() {
         return cfg.getId();

@@ -134,6 +134,7 @@ public abstract class RaftServer extends RaftNodeAdapter {
 		//
 		// initially set to max(priority of all nodes)
         this.targetPriority = getMaxPriorityOfNodes();
+        this.electionTimeoutCounter = 0;
 		//
 		// Asynchronous thread pool  dispatch & notify
 		int coreThreads = Math.max(this.raftCfg.getTpCoreThreads() / 2, 4);
@@ -981,6 +982,11 @@ public abstract class RaftServer extends RaftNodeAdapter {
 	@Override
 	public PeerSet getPeerSet() {
 		return peerSet;
+	}
+	
+	@Override
+	public int getDecayPriorityGap() {
+		return raftCfg.getCc().getDecayPriorityGap();
 	}
 	
 	//

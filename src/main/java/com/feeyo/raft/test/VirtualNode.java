@@ -347,4 +347,9 @@ public class VirtualNode implements RaftNodeListener {
 		return 0;
 	}
 
+	@Override
+	public int getDecayPriorityGap() {
+		return 0;
+	}
+
 }

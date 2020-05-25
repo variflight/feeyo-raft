@@ -61,9 +61,8 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
 	// 基于间隙值的衰减目标优先级值
     private void decayTargetPriority() {
         // Default Gap value should be bigger than 10.
-        final int decayPriorityGap = 10;
+        final int decayPriorityGap = Math.max(getDecayPriorityGap(), 10);
         final int gap = Math.max(decayPriorityGap, (this.targetPriority / 5));
-
         final int prevTargetPriority = this.targetPriority;
         this.targetPriority = Math.max(ElectionPriority.MinValue, (this.targetPriority - gap));
         LOGGER.info("Node {} priority decay, from: {}, to: {}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
