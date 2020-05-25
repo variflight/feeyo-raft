@@ -49,7 +49,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
             if (this.electionTimeoutCounter == 1) 
                 return false;
         }
-
+        //
         return local.getPriority() >= this.targetPriority;
 	}
 	
