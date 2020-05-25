@@ -32,7 +32,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         if (local.isPriorityDisabled()) 
             return true;
         //
-        LOGGER.info("self={}, priority {}, target_priority: {}.", getPeer().getId(), local.getPriority(), this.targetPriority);
+        LOGGER.info("self={}, priority:{}, target_priority:{}", getPeer().getId(), local.getPriority(), this.targetPriority);
         //
         // If current node's priority < target_priority, it does not initiate leader,
         // election and waits for the next election timeout.
@@ -74,7 +74,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         final int gap = Math.max(decayPriorityGap, (this.targetPriority / 5));
         final int prevTargetPriority = this.targetPriority;
         this.targetPriority = Math.max(ElectionPriority.MinValue, (this.targetPriority - gap));
-        LOGGER.info("Node {} priority decay, from: {}, to: {}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
+        LOGGER.info("self={}, priority decay, from:{}, to:{}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
     }
 
 }
