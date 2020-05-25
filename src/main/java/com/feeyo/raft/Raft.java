@@ -109,7 +109,7 @@ public class Raft {
 	private Object _requestVoteLock = new Object();
 	
 	// 
-	RaftListener listener; 
+	RaftNodeListener listener; 
 	
 	//
 	// 逆序排列
@@ -122,7 +122,7 @@ public class Raft {
 		}
 	};
 	
-	public Raft(Config cfg, Storage storage, RaftListener listener) throws RaftException {
+	public Raft(Config cfg, Storage storage, RaftNodeListener listener) throws RaftException {
 		//
 		// raft configure validate
 		cfg.validate();
@@ -757,6 +757,10 @@ public class Raft {
 		MessageType voteMsg = null;
 		long newTerm = Const.ZERO_TERM; 
 		if ( campaignType == CampaignType.CAMPAIGN_PRE_ELECTION ) {
+			//
+			// 判断是否发起选举
+			if ( !listener.isAllowElection() )
+				return;
 			//
 			becomePreCandidate();
 			//

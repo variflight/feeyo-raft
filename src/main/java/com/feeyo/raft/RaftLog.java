@@ -66,9 +66,9 @@ public class RaftLog {
 	// returned from calls to nextEnts.
 	private long maxNextEntsSize;
 	
-	private RaftListener listener;
+	private RaftNodeListener listener;
 
-	public RaftLog(RaftListener listener, Storage storage, long maxNextEntsSize) throws RaftException {
+	public RaftLog(RaftNodeListener listener, Storage storage, long maxNextEntsSize) throws RaftException {
 
 		if (storage == null)
 			throw new Errors.RaftException("storage must not be nil");

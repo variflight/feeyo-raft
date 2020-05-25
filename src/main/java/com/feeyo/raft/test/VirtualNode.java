@@ -14,7 +14,7 @@ import com.feeyo.raft.LinearizableReadOption;
 import com.feeyo.raft.Peer;
 import com.feeyo.raft.PeerSet;
 import com.feeyo.raft.Raft;
-import com.feeyo.raft.RaftListener;
+import com.feeyo.raft.RaftNodeListener;
 import com.feeyo.raft.ReadOnlyOption;
 import com.feeyo.raft.StateType;
 import com.feeyo.raft.Errors.RaftException;
@@ -30,7 +30,7 @@ import com.feeyo.raft.util.StandardThreadExecutor;
 import com.feeyo.raft.util.Util;
 import com.google.protobuf.ByteString;
 
-public class VirtualNode implements RaftListener {
+public class VirtualNode implements RaftNodeListener {
 
 	// ..
 	public static Map<String, SyncWaitCallback> waitingCallbacks = new ConcurrentHashMap<>();
@@ -316,6 +316,35 @@ public class VirtualNode implements RaftListener {
 			}
 		}
 		
+	}
+
+	public long getId() {
+		return peer.getId();
+	}
+
+	@Override
+	public PeerSet getPeerSet() {
+		return peerSet;
+	}
+
+	@Override
+	public Peer getPeer() {
+		return peer;
+	}
+
+	@Override
+	public boolean isAllowElection() {
+		return true;
+	}
+
+	@Override
+	public int getNodeTargetPriority() {
+		return 0;
+	}
+
+	@Override
+	public int getMaxPriorityOfNodes() {
+		return 0;
 	}
 
 }

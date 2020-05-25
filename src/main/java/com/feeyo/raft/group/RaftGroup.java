@@ -22,8 +22,8 @@ import com.feeyo.raft.Peer;
 import com.feeyo.raft.PeerSet;
 import com.feeyo.raft.ProgressSet;
 import com.feeyo.raft.Raft;
-import com.feeyo.raft.RaftListener;
 import com.feeyo.raft.RaftLog;
+import com.feeyo.raft.RaftNodeAdapter;
 import com.feeyo.raft.RaftStatistics;
 import com.feeyo.raft.Ready;
 import com.feeyo.raft.SoftState;
@@ -75,7 +75,7 @@ import com.google.protobuf.ZeroByteStringHelper;
  * @author zhuam
  *
  */
-public class RaftGroup implements RaftListener {
+public class RaftGroup extends RaftNodeAdapter {
     //
     private static Logger LOGGER = LoggerFactory.getLogger( RaftGroup.class );
     //
@@ -1091,6 +1091,17 @@ public class RaftGroup implements RaftListener {
             gMessages.add( toGroupMessage(msg) );
         return gMessages;
     }
+    
+    
+	@Override
+	public PeerSet getPeerSet() {
+		return this.raftGroupSrv.getPeerSet();
+	}
+	
+	@Override
+	public Peer getPeer() {
+		return getPeerSet().get( getId() );
+	}
 
     public long getId() {
         return cfg.getId();
@@ -1119,4 +1130,5 @@ public class RaftGroup implements RaftListener {
     AbstractSnapshotter getSnapshotter() {
         return snapshotter;
     }
+
 }

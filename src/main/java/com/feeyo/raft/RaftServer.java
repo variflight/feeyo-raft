@@ -73,7 +73,7 @@ import org.slf4j.LoggerFactory;
  * @author zhuam
  */
 @SuppressWarnings("deprecation")
-public abstract class RaftServer implements RaftListener {
+public abstract class RaftServer extends RaftNodeAdapter {
 	//
 	private static Logger LOGGER = LoggerFactory.getLogger( RaftServer.class );
 	//
@@ -121,12 +121,19 @@ public abstract class RaftServer implements RaftListener {
 	protected boolean isDeltaSnapshot = false;
 	
 	//
+	protected volatile int targetPriority;			// 目标leader 的选举权重值
+	protected volatile int electionTimeoutCounter;	// 当前节点的选举超时数
+	
+	//
 	//
 	public RaftServer(RaftConfig raftCfg, StateMachineAdapter stateMachine) {
 		this.raftCfg = raftCfg;
 		this.storageDir = raftCfg.getCc().getStorageDir() + File.separator;
 		this.peerSet = raftCfg.getPeerSet();
 		this.stateMachine = stateMachine;
+		//
+		// initially set to max(priority of all nodes)
+        this.targetPriority = getMaxPriorityOfNodes();
 		//
 		// Asynchronous thread pool  dispatch & notify
 		int coreThreads = Math.max(this.raftCfg.getTpCoreThreads() / 2, 4);
@@ -526,7 +533,7 @@ public abstract class RaftServer implements RaftListener {
 
 	//
 	private boolean applyConfChange(ConfChange cc) {
-
+		//
 		boolean isChanged = false;
 		//
 		long id = cc.getNodeId();
@@ -540,7 +547,6 @@ public abstract class RaftServer implements RaftListener {
 				port = Integer.parseInt(hostAndPort[1]);
 			}
 		}
-
 		//
 		switch( cc.getChangeType() ) {
 		case AddNode:
@@ -585,7 +591,6 @@ public abstract class RaftServer implements RaftListener {
         // 本地快照与发送快照需要互斥
         if ( snapshotSendingCAS.hasLock() )
         	return;
-
         final long appliedIndex = raft.getRaftLog().getApplied();
         final long snapshotIndex = wal.getStart().getIndex();
         final long snapCount = raftCfg.getCc().getSnapCount();
@@ -597,7 +602,7 @@ public abstract class RaftServer implements RaftListener {
         long interval = now - lastSnapshotTime;
         if ( interval < raftCfg.getCc().getSnapInterval() )
         	return;
-
+        //
         // 是否正在创建本地快照
         if ( !isCreatingSnapshot.compareAndSet(false, true) )
         	return;
@@ -966,7 +971,19 @@ public abstract class RaftServer implements RaftListener {
 					msg.getFrom(), msg.getMsgType(), msg.getSerializedSize(), ExceptionUtils.getStackTrace(e));
 		}
 	}
-
+	
+	//
+	@Override
+	public Peer getPeer() {
+		return peerSet.get( getId() );
+	}
+	
+	@Override
+	public PeerSet getPeerSet() {
+		return peerSet;
+	}
+	
+	//
 	public long getId() {
 		return raftCfg.getLocal().getId();
 	}
@@ -974,11 +991,6 @@ public abstract class RaftServer implements RaftListener {
 	public long getLeaderId() {
 		return leaderId;
 	}
-
-	public PeerSet getPeerSet() {
-		return peerSet;
-	}
-
 	public ProgressSet getPrs() {
 		return this.raft.getPrs();
 	}
