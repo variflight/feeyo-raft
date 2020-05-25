@@ -758,7 +758,7 @@ public class Raft {
 		long newTerm = Const.ZERO_TERM; 
 		if ( campaignType == CampaignType.CAMPAIGN_PRE_ELECTION ) {
 			//
-			// 判断是否发起选举
+			// 判断是否允许发起选举
 			if ( !listener.isAllowElection() )
 				return;
 			//

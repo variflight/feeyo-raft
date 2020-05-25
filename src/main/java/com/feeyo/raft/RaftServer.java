@@ -119,11 +119,6 @@ public abstract class RaftServer extends RaftNodeAdapter {
 	//
 	@Deprecated
 	protected boolean isDeltaSnapshot = false;
-	
-	//
-	protected volatile int targetPriority;			// 目标leader 的选举权重值
-	protected volatile int electionTimeoutCounter;	// 当前节点的选举超时数
-	
 	//
 	//
 	public RaftServer(RaftConfig raftCfg, StateMachineAdapter stateMachine) {
