@@ -92,14 +92,8 @@ public final class Config {
 	// logical clock from assigning the timestamp and then forwarding the data
 	// to the leader.
 	private boolean disableProposalForwarding;
-
+	//
 	private boolean syncLog;
-	
-	// If next leader is not elected until next election timeout, it exponentially
-    // decay its local target priority, for example target_priority = target_priority - gap
-    // Default: 10
-	private int decayPriorityGap = 10;
-	
 	//
 	public long getId() {
 		return id;
@@ -276,15 +270,6 @@ public final class Config {
 
 	public void setSyncLog(boolean syncLog) {
 		this.syncLog = syncLog;
-	}
-	
-	//
-	public int getDecayPriorityGap() {
-		return decayPriorityGap;
-	}
-
-	public void setDecayPriorityGap(int decayPriorityGap) {
-		this.decayPriorityGap = decayPriorityGap;
 	}
 
 	//

@@ -322,15 +322,7 @@ public class VirtualNode implements RaftNodeListener {
 		return peer.getId();
 	}
 
-	@Override
-	public PeerSet getPeerSet() {
-		return peerSet;
-	}
 
-	@Override
-	public Peer getPeer() {
-		return peer;
-	}
 
 	@Override
 	public boolean isAllowElection() {
@@ -342,14 +334,5 @@ public class VirtualNode implements RaftNodeListener {
 		return 0;
 	}
 
-	@Override
-	public int getMaxPriorityOfNodes() {
-		return 0;
-	}
-
-	@Override
-	public int getDecayPriorityGap() {
-		return 0;
-	}
 
 }

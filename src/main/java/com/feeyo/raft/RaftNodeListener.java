@@ -18,11 +18,6 @@ public interface RaftNodeListener {
 	void onProposalForwarding(Message msg); 		// Follower 收到 MsgPropose 需要转发
 	void onSendSnapshots(Message msg);			 	// Leader 给 Follower 发送快照 MsgSnapshot
 	//
-	Peer getPeer();
-	PeerSet getPeerSet();
-	//
-	int getDecayPriorityGap();
 	boolean isAllowElection();						// 是否允许通过比较节点的优先级和目标优先级来启动选举
 	int getNodeTargetPriority();					// 获取节点的目标选择优先级值
-	int getMaxPriorityOfNodes();					// 获取同一Raft组中所有节点的最大优先级值，并更新当前节点的目标优先级值
 }

@@ -1096,20 +1096,14 @@ public class RaftGroup extends RaftNodeAdapter {
     }
     
     ///
-    
-	@Override
-	public PeerSet getPeerSet() {
-		return this.raftGroupSrv.getPeerSet();
-	}
-	
 	@Override
 	public Peer getPeer() {
 		return getPeerSet().get( getId() );
 	}
 	
-	@Override
-	public int getDecayPriorityGap() {
-		return cfg.getDecayPriorityGap();
+    @Override
+	public PeerSet getPeerSet() {
+		return this.raftGroupSrv.getPeerSet();
 	}
 
 	///

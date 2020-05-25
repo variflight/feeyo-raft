@@ -979,14 +979,8 @@ public abstract class RaftServer extends RaftNodeAdapter {
 		return peerSet.get( getId() );
 	}
 	
-	@Override
 	public PeerSet getPeerSet() {
 		return peerSet;
-	}
-	
-	@Override
-	public int getDecayPriorityGap() {
-		return raftCfg.getCc().getDecayPriorityGap();
 	}
 	
 	//
