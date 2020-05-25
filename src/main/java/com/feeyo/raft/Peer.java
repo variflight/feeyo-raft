@@ -87,20 +87,15 @@ public final class Peer {
 				.toString();
 	}
 	
-	/**
-	 * 判断该节点是否可以参与选举
-	 */
+	// 判断该节点是否可以参与选举
 	public boolean isPriorityNotElected() {
         return this.priority == ElectionPriority.NotElected;
     }
 
-    /**
-     * 判断该节点是否禁用了优先选举功能
-     */
+    // 判断该节点是否禁用了优先选举功能
     public boolean isPriorityDisabled() {
         return this.priority <= ElectionPriority.Disabled;
     }
-	
 	
 	///
 	public static class Endpoint{
