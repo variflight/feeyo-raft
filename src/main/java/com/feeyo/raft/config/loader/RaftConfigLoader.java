@@ -45,7 +45,7 @@ public class RaftConfigLoader {
 			int snapInterval = parseIntValue(map, "snapInterval", 45 * 60 * 1000); // 45 Minutes 
 
 			boolean syncLog = parseBooleanValue(map, "syncLog", false);
-
+			//
 			int tpCoreThreads = parseIntValue(map, "tpCoreThreads", 5);
 			int tpMaxThreads = parseIntValue(map, "tpMaxThreads", 50);
 			int tpQueueCapacity = parseIntValue(map, "tpQueueCapacity", 10);

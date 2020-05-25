@@ -3,7 +3,7 @@ package com.feeyo.raft;
 import com.alibaba.fastjson.annotation.JSONField;
 
 public final class Peer {
-	
+	//
 	private long id;
 	
 	@JSONField(serialize=false) 
