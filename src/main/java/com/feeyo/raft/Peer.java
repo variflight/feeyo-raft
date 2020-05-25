@@ -10,7 +10,11 @@ public final class Peer {
 	private final Endpoint endpoint;
 	
 	private boolean isLearner;
+	//
+	// 节点的选举优先级值，如果节点不支持优先级选举，值设置-1
+	private int priority = ElectionPriority.Disabled;
 	
+	//
 	public Peer() {
 		endpoint = new Endpoint();
 	}
@@ -19,6 +23,13 @@ public final class Peer {
 		this.endpoint = new Endpoint(ip, port);
 		this.id = id;
 		this.isLearner = isLearner;
+	}
+	
+	public Peer(long id, String ip, int port, boolean isLearner, int priority) {
+		this.endpoint = new Endpoint(ip, port);
+		this.id = id;
+		this.isLearner = isLearner;
+		this.priority = priority;
 	}
 	
 	public void setId(long id) {
@@ -57,9 +68,16 @@ public final class Peer {
 		this.isLearner = isLearner;
 	}
 	
+    public int getPriority() {
+        return priority;
+    }
 
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    //
 	public String toUrl() {
-		
 		return new StringBuffer()
 				.append("http://")
 				.append( endpoint.ip )
@@ -68,6 +86,20 @@ public final class Peer {
 				.append( "/raft/message" )
 				.toString();
 	}
+	
+	/**
+	 * 判断该节点是否可以参与选举
+	 */
+	public boolean isPriorityNotElected() {
+        return this.priority == ElectionPriority.NotElected;
+    }
+
+    /**
+     * 判断该节点是否禁用了优先选举功能
+     */
+    public boolean isPriorityDisabled() {
+        return this.priority <= ElectionPriority.Disabled;
+    }
 	
 	
 	///
@@ -86,11 +118,11 @@ public final class Peer {
 
         @Override
         public String toString() {
-            return new StringBuffer()
-                    .append(ip)
-                    .append(":")
-                    .append(port)
-                    .toString();
+            StringBuffer strBuf = new StringBuffer();
+            strBuf.append(ip);
+            strBuf.append(":");
+            strBuf.append(port);    
+            return strBuf.toString();
         }
 	}
 	
