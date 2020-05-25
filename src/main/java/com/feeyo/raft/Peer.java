@@ -11,11 +11,6 @@ public final class Peer {
 	
 	private boolean isLearner;
 	
-	// Used to follower replication
-	// member group id
-	// 
-	private long gid;	
-	
 	public Peer() {
 		endpoint = new Endpoint();
 	}
@@ -62,13 +57,6 @@ public final class Peer {
 		this.isLearner = isLearner;
 	}
 	
-	public long getGid() {
-		return gid;
-	}
-
-	public void setGid(long gid) {
-		this.gid = gid;
-	}
 
 	public String toUrl() {
 		

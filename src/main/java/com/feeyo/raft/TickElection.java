@@ -24,7 +24,7 @@ public class TickElection {
 			
 			// 如果可以被提升为leader，同时选举时间也到了
 			r.electionElapsed = 0;
-
+			//
 			// 发送HUP消息是为了重新开始选举
 			Message msg = Message.newBuilder()
 					.setTo(Const.None)

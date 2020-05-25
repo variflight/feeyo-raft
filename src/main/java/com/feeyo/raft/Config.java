@@ -94,8 +94,12 @@ public final class Config {
 	private boolean disableProposalForwarding;
 
 	private boolean syncLog;
+	
 	//
-
+	//本地节点选举时的优先级，如果此节点不支持优先级选择，则将此值设置为-1， 默认值：-1
+	private int electionPriority = ElectionPriority.Disabled;
+	
+	//
 	public long getId() {
 		return id;
 	}
@@ -271,6 +275,14 @@ public final class Config {
 
 	public void setSyncLog(boolean syncLog) {
 		this.syncLog = syncLog;
+	}
+	//
+	public int getElectionPriority() {
+		return electionPriority;
+	}
+
+	public void setElectionPriority(int electionPriority) {
+		this.electionPriority = electionPriority;
 	}
 
 	//
