@@ -758,7 +758,8 @@ public class Raft {
 		long newTerm = Const.ZERO_TERM; 
 		if ( campaignType == CampaignType.CAMPAIGN_PRE_ELECTION ) {
 			//
-			// 判断是否允许发起选举
+			// 是否发起选举
+			// PreVote 预选举阶段之前，会通过先比较自身的 priority 值和 targetPriority 值来决定是否参加本轮的 Leader 选举投票
 			if ( !listener.isAllowElection() )
 				return;
 			//

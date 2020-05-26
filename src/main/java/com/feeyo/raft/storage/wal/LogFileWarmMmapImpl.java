@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.feeyo.net.nio.util.TimeUtil;
-import com.feeyo.raft.util.PlatformLibC;
 import com.sun.jna.NativeLong;
 import com.sun.jna.Pointer;
 

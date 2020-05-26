@@ -1,4 +1,4 @@
-package com.feeyo.raft.util;
+package com.feeyo.raft.storage.wal;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
