@@ -1241,7 +1241,8 @@ public class Raft {
 				matched = nextIndex - 1;
 				this.isLearner = isLearner;
 			}
-			setProgress(n, matched, nextIndex, isLearner);
+			//
+			this.setProgress(n, matched, nextIndex, isLearner);
 			LOGGER.info("self={}, restored progress of node={} [{}]", this.id, n, prs.get(n));
 		}
 	}
@@ -1275,7 +1276,6 @@ public class Raft {
 		} else {
 			// new progress
 			long lastIndex = raftLog.lastIndex();
-			
 			// 这里才真的添加进来
 			this.setProgress(id, 0, lastIndex + 1, isLearner);
 		}

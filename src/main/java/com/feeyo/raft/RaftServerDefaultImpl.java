@@ -45,21 +45,17 @@ public class RaftServerDefaultImpl extends RaftServer {
             long snapshotIndex = snapshotMeta.getIndex();
             long appliedIndex = raft.getRaftLog().getApplied();
             if( snapshotIndex <= appliedIndex  ) 
-                throw new Errors.RaftException("snapshot index ["+ snapshotIndex 
-                			+ "] should > progress.appliedIndex ["+ appliedIndex +"] + 1)");
-            
+                throw new Errors.RaftException("snapshot index ["+ snapshotIndex + "] should > progress.appliedIndex ["+ appliedIndex +"] + 1)");
+            //
             // Apply unstable snapshot to state machine
             applySnapshotToStateMachine( snapshotMeta );
             //
             LOGGER.info("apply snapshot at index {}, old appliedIndex={}", snapshotIndex, appliedIndex);
-            //
             raftStatistics.update( RaftStatistics.APPLY_SNAPSHOT, TimeUtil.since( beginMillis ) );
         }
-
-        //
-        long tmpBeginMillis = TimeUtil.currentTimeMillis();
 		//
 		// Write hardState & entries to log
+        long tmpBeginMillis = TimeUtil.currentTimeMillis();
         this.wal.save( ready.unstableEntries, ready.hs );
         raftStatistics.update( RaftStatistics.APPEND_LOGS, TimeUtil.since( tmpBeginMillis ) );
         //

@@ -111,7 +111,7 @@ public class Progress {
 	}
 	
 	// 修改为 Probe 状态
-	public void becomeProbe() {
+	public synchronized void becomeProbe() {
 		// If the original state is ProgressState.Snapshot, progress knows that
         // the pending snapshot has been sent to this peer successfully, then
         // probes from pendingSnapshot + 1
@@ -128,12 +128,12 @@ public class Progress {
         }
 	}
 	
-	public void becomeReplicate() {
+	public synchronized void becomeReplicate() {
 		this.resetState( ProgressState.Replicate );
 		this.nextIdx = this.matched + 1;
 	}
 	
-	public void becomeSnapshot(long snapshotIndex) {
+	public synchronized void becomeSnapshot(long snapshotIndex) {
 		this.resetState(ProgressState.Snapshot);
 		this.pendingSnapshot = snapshotIndex;
 	}
@@ -161,7 +161,7 @@ public class Progress {
 	// 收到 append response 的成功应答之后，leader更新节点的索引数据
 	// 如果传入的n小于等于当前的match索引，则索引就不会更新，返回false；否则更新索引返回true
 	//
-	public boolean maybeUpdate(long n) {
+	public synchronized boolean maybeUpdate(long n) {
 		boolean updated = false;
 		if (matched < n) {
 			matched = n;
@@ -175,7 +175,7 @@ public class Progress {
 		return updated;
 	}
 	
-	public void optimisticUpdate(long n) {
+	public synchronized void optimisticUpdate(long n) {
 		 this.nextIdx = n + 1;
 	}
 	
@@ -187,7 +187,7 @@ public class Progress {
 	// 否则将把该节点的index减少到min(rejected,last)然后返回true
 	// rejected是拒绝该append消息时的索引，last是拒绝该消息的节点的最后一条日志索引
 	//
-	public boolean maybeDecrTo(long rejected, long last) {
+	public synchronized boolean maybeDecrTo(long rejected, long last) {
 		
 		// 如果当前在接收副本状态
 		if (this.state == ProgressState.Replicate) {
@@ -261,27 +261,26 @@ public class Progress {
 		this.isLearner = isLearner;
 	}
 
-	public void setMatched(long matched) {
+	public synchronized void setMatched(long matched) {
 		this.matched = matched;
 	}
 
-	public void setNextIdx(long nextIdx) {
+	public synchronized void setNextIdx(long nextIdx) {
 		this.nextIdx = nextIdx;
 	}
 
-	public void setState(ProgressState state) {
+	public synchronized void setState(ProgressState state) {
 		this.state = state;
 	}
 
-	public void setPendingSnapshot(long pendingSnapshot) {
+	public synchronized void setPendingSnapshot(long pendingSnapshot) {
 		this.pendingSnapshot = pendingSnapshot;
 	}
 
-	public void setRecentActive(boolean recentActive) {
+	public synchronized void setRecentActive(boolean recentActive) {
 		this.recentActive = recentActive;
-		//
 		if ( recentActive )
-			recentActiveTime = TimeUtil.currentTimeMillis();
+			this.recentActiveTime = TimeUtil.currentTimeMillis();
 	}
 
 	public long getMatched() {
@@ -316,7 +315,7 @@ public class Progress {
 		return isLearner;
 	}
 
-	
+	///
 	// E.g: 流量控制, 类似 TCP 的滑动窗口
 	//
 	// leader 在给某一副本发送 MsgAppend 时，会检查其对应的滑动窗口，这个逻辑在 Raft.maybeSendAppend 方法中；
@@ -324,18 +323,11 @@ public class Progress {
 	// 使窗口向前滑动，这个逻辑在 StepLeader 中
 	//
 	public static class Inflights {
-		
-        // the starting index in the buffer
-        public int start;
-
-        // number of inflights in the buffer
-        public int count;
-
-        // the size of the buffer
-        public int size;
-
-        // buffer contains the index of the last entry inside one message.
-        public long[] buffer = new long[0];
+        public int start;	 // the starting index in the buffer
+        public int count;	 // number of inflights in the buffer
+        public int size;	 // the size of the buffer
+        //
+        public long[] buffer = new long[0];	// buffer contains the index of the last entry inside one message.
 
         public Inflights(int size) {
             this.size = size;
@@ -343,7 +335,6 @@ public class Progress {
 
         // add adds an inflight into inflights
         public synchronized void add(long inflight) throws RaftException {
-        	//
             if (full()) 
                 throw new Errors.RaftException("cannot add into a full inflights");
             //
@@ -352,7 +343,6 @@ public class Progress {
             if (next >= size) { //环形队列
                 next -= size;
             }
-            
             //
             // 初始化的buffer数组较短，随着使用会不断进行扩容（2倍），其扩容的上限为size
             if (next >= buffer.length) {
@@ -404,8 +394,7 @@ public class Progress {
 			count -= i;
 			start = idx;
 			if (count == 0) {
-				// inflights is empty, reset the start index so that we don't grow the 
-				// buffer unnecessarily.
+				// inflights is empty, reset the start index so that we don't grow the buffer unnecessarily.
 				start = 0;
 			}
         }
@@ -439,5 +428,4 @@ public class Progress {
 		sb.append("]");
 		return sb.toString();
 	}
-
 }
