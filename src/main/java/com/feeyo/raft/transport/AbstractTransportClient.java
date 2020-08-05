@@ -105,9 +105,7 @@ public abstract class AbstractTransportClient<M> {
 	public abstract void pipeliningBatchPost(List<M> messages);
 	
 	//
-	//
 	public boolean syncSend(long id, ByteBuffer buffer) {
-		//
 		final AtomicBoolean isFailure = new AtomicBoolean(false);
 		final CountDownLatch latch = new CountDownLatch(1);
 		//
@@ -124,14 +122,13 @@ public abstract class AbstractTransportClient<M> {
 				latch.countDown();
 			}
 		});
-        
+        //
         try {
         	latch.await();
         } catch (InterruptedException e) { /* ignore*/ }
         //
         return isFailure.get();
 	}
-	
 	
 	public boolean asyncSend(long id, ByteBuffer buffer, AsyncHttpResponseHandler handler) {
 		try {

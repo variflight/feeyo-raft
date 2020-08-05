@@ -17,19 +17,17 @@ import com.feeyo.raft.transport.server.HttpConnection;
 
 
 public class HttpUtil {
-	
+	///
 	private static HttpResponseEncoder httpResponseEncoder = new HttpResponseEncoder();
-	
+	//
     public static final String HTTP_DATE_FORMAT = "EEE, dd MMM yyyy HH:mm:ss zzz";
     public static final String HTTP_DATE_GMT_TIMEZONE = "GMT";
     private static final String HTTP_MIME_TYPE__VIDEO_MP2T = "video/MP2T";
     private static final String HTTP_MIME_TYPE__TEXT = "text/html";
     private static final String HTTP_MIME_TYPE__MPEG_URL_APPLE = "application/vnd.apple.mpegurl";
     private static final String HTTP_11 = "HTTP/1.1";
-    
-
+    //
     private static Map<String, String> DEFAULT_MIME_TYPES;
-
     static {
         Map<String, String> mimeTypes = new HashMap<String, String>();
         mimeTypes.put("mp3",HTTP_MIME_TYPE__VIDEO_MP2T);
@@ -84,9 +82,8 @@ public class HttpUtil {
     public static final HttpResponse redirectPermanently(String url){
         return redirect(HttpResponseStatus.MOVED_PERMANENTLY, url);
     }
-    
+    ///
     //  send 
-    //
     public static void sendOk(HttpConnection conn) {
     	sendOk(conn, null);
 	}
@@ -135,6 +132,4 @@ public class HttpUtil {
     	sdf.setTimeZone(TimeZone.getTimeZone(HTTP_DATE_GMT_TIMEZONE));
         return sdf.format(new Date(timemillis));
     }
-
-	
 }

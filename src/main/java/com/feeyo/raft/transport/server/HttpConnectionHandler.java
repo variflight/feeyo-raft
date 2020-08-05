@@ -134,7 +134,6 @@ public class HttpConnectionHandler implements NIOHandler<HttpConnection>{
 			}
 			
 		} catch(UnknownProtocolException e) {
-			//
 			LOGGER.warn( "Unknown protocol err:  ex={}, host={}, port={}",
 					ExceptionUtils.getStackTrace(e), conn.getHost(), conn.getPort() );
 			//

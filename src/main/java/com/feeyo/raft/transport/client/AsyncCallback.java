@@ -14,11 +14,10 @@ import com.feeyo.net.nio.NetSystem;
  *
  */
 public class AsyncCallback implements ConCallback {
-	
+	//
 	private AsyncHttpResponseHandler responseHandler;
 	//
 	private HttpResponseDecoder responseDecoder = new HttpResponseDecoder();
-	
 	//
 	public AsyncCallback(AsyncHttpResponseHandler handler) {
 		this.responseHandler = handler;
@@ -31,13 +30,11 @@ public class AsyncCallback implements ConCallback {
 	
 	@Override
 	public void connectionError(HttpClientConnection conn, Exception ex) {
-		//
 		failed( ExceptionUtils.getStackTrace(ex) );
 	}
 
 	@Override
 	public void handleResponse(final HttpClientConnection conn, final byte[] data) throws IOException {
-		
 		final HttpResponse response = responseDecoder.decode(data);
 		if ( response != null ) {
 			//
@@ -50,22 +47,18 @@ public class AsyncCallback implements ConCallback {
 					}
 				});
 			}
-			
 			// 释放连接
 			conn.release();
 		}
-		
 	}
 
 	@Override
 	public void connectionClose(HttpClientConnection conn, String reason) {
 		failed( reason );
 	}
-	
+	//
 	private void failed(final String reason) {
-		//
 		if ( responseHandler != null ) {
-			//
 			NetSystem.getInstance().getBusinessExecutor().execute(new Runnable() {
 				@Override
 				public void run() {

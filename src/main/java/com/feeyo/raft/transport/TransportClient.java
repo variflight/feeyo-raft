@@ -87,5 +87,4 @@ public class TransportClient extends AbstractTransportClient<Raftpb.Message> {
 			// ignored
 		}
 	}
-	
 }

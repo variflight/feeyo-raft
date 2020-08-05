@@ -17,17 +17,11 @@ public class ProposeCallbackHttpRedirectImpl extends ProposeCallback {
 	
 	public void onCompleted() {
 		super.onCompleted();
-		//
 		HttpUtil.sendOk(conn);
 	}
 	
 	public void onFailed(byte[] errMsg) {
 		super.onFailed(errMsg);
-		//
-		if ( errMsg == null )
-			HttpUtil.sendError(conn, "raft failed!");
-		else 
-			HttpUtil.sendError(conn, Utf8Util.readUtf8(errMsg));
+		HttpUtil.sendError(conn, errMsg == null ? "raft failed!": Utf8Util.readUtf8(errMsg));
 	}
-	
 }

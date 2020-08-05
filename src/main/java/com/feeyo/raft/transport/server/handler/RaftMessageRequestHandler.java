@@ -152,5 +152,4 @@ public class RaftMessageRequestHandler implements RequestHandler {
 			}
 		}
 	}
-
 }
