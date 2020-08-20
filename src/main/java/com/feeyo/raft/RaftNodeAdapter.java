@@ -19,6 +19,10 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
 	public abstract Peer getPeer();
 	public abstract PeerSet getPeerSet();
 	
+	/*
+	 * 是否允许通过比较节点的优先级和目标优先级来启动选举。
+	 * 同时，如果下一任领导人直到下一次选举超时才当选，那么它的本地目标优先级就会呈指数衰减
+	 */
 	@Override
 	public boolean isAllowLaunchElection() {
 		//

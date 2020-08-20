@@ -15,9 +15,8 @@ public class TickElection {
     public static void tick(Raft r) throws RaftException {
     	
     	r.electionElapsed++;
-    	
+    	//
 		if (r.promotable() && r.pastElectionTimeout()) {
-			
 			//
 	    	LOGGER.info("self={}, tick election electionElapsed={}, randomizedElectionTimeout={}", 
 	    			r.id, r.electionElapsed, r.randomizedElectionTimeout);
