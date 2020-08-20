@@ -12,8 +12,8 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
     // Default: 10
 	private static final int decayPriorityGap = 10;
 	//
-	protected volatile int targetPriority;			// 目标leader 的选举权重值
-	protected volatile int electionTimeoutCounter;	// 当前节点的选举超时数
+	protected volatile int targetPriority;				// 目标leader 的选举权重值
+	protected volatile int electionTimeoutCounter;		// 当前节点的选举超时数
 	
 	//
 	public abstract Peer getPeer();

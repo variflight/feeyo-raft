@@ -90,7 +90,7 @@ public class VirtualNode extends RaftNodeAdapter {
 		cfg.setLocalPeer( peer );
 		cfg.setPeerSet( peerSet );
 		
-        this.targetPriority = getMaxPriorityOfNodes();
+        this.targetPriority = super.getMaxPriorityOfNodes();
 		
 		//
 		Raft raft = new Raft(c, new MemoryStorage(), this);

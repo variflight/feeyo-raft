@@ -128,7 +128,7 @@ public abstract class RaftServer extends RaftNodeAdapter {
 		this.stateMachine = stateMachine;
 		//
 		// initially set to max(priority of all nodes)
-        this.targetPriority = getMaxPriorityOfNodes();
+        this.targetPriority = super.getMaxPriorityOfNodes();
         this.electionTimeoutCounter = 0;
 		//
 		// Asynchronous thread pool  dispatch & notify
