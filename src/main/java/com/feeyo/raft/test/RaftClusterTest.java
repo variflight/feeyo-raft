@@ -97,7 +97,7 @@ public class RaftClusterTest {
 		}, 15, TimeUnit.SECONDS);
 	}
 	
-	private static volatile long killId = 0;
+	private static volatile long todoId = 0;
 	
 	private static void nextRandomStartAndStop() {
 		//
@@ -108,21 +108,21 @@ public class RaftClusterTest {
 				//
 				if (cluster != null) {
 					
-					if ( killId == 0 ) {
-						killId = cluster.leaderId;
-						cluster.stopById( killId );
-						System.out.println("##stop node, id=" + killId);
+					if ( todoId == 0 ) {
+						todoId = cluster.leaderId;
+						cluster.stopById( todoId );
+						System.out.println("##stop node, id=" + todoId);
 					} else {
-						System.out.println("##start node, id=" + killId);
-						cluster.startById( killId );
-						killId = 0;
+						System.out.println("##restart node, id=" + todoId);
+						cluster.startById( todoId );
+						todoId = 0;
 					}
 				}
 				//
 				nextRandomStartAndStop();
 			}
 
-		}, 90, TimeUnit.SECONDS);
+		}, 60, TimeUnit.SECONDS);
 	}
 	
 	public static void main(String[] args) throws RaftException {

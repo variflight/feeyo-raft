@@ -6,9 +6,9 @@ import org.slf4j.LoggerFactory;
 public abstract class RaftNodeAdapter implements RaftNodeListener {
 	//
 	private static Logger LOGGER = LoggerFactory.getLogger( RaftNodeAdapter.class );
-	
-	// If next leader is not elected until next election timeout, it exponentially
-    // decay its local target priority, for example target_priority = target_priority - gap
+	//
+	// If next leader is not elected until next election timeout, 
+	// it exponentially decay its local target priority, for example target_priority = target_priority - gap
     // Default: 10
 	private static final int decayPriorityGap = 10;
 	//
@@ -50,6 +50,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
             //
             if (this.electionTimeoutCounter == 1) 
                 return false;
+            
         }
         return local.getPriority() >= this.targetPriority;
 	}
@@ -77,7 +78,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         final int prevTargetPriority = this.targetPriority;
         this.targetPriority = Math.max(ElectionPriority.MinValue, (this.targetPriority - gap));
         //
-        LOGGER.info("self={}, priority decay, from:{}, to:{}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
+        LOGGER.info("self={}, priority decay, target_priority:{} -> {}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
     }
     
 }

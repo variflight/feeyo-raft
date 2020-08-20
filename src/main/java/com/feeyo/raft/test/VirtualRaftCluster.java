@@ -18,8 +18,8 @@ public class VirtualRaftCluster {
 	public VirtualRaftCluster() throws RaftException {
 		
 		Peer peer1 = new Peer(1, "127.0.0.1", 8081, false, 160);
-		Peer peer2 = new Peer(2, "127.0.0.1", 8082, false, 70);
-		Peer peer3 = new Peer(3, "127.0.0.1", 8083, false, 40);
+		Peer peer2 = new Peer(2, "127.0.0.1", 8082, false, 120);
+		Peer peer3 = new Peer(3, "127.0.0.1", 8083, false, 90);
 		
 		PeerSet peerSet = new PeerSet();
 		peerSet.put( peer1 );
