@@ -12,9 +12,8 @@ import com.feeyo.raft.PeerSet;
 public class VirtualRaftCluster {
 	
 	// RaftNode ...
-	public static Map<Long, VirtualNode> nodeSet = new ConcurrentHashMap<>();
-	
-	public static volatile long leaderId = -1;
+	public Map<Long, VirtualNode> nodeSet = new ConcurrentHashMap<>();
+	public volatile long leaderId = -1;
 	
 	public VirtualRaftCluster() throws RaftException {
 		
@@ -27,14 +26,24 @@ public class VirtualRaftCluster {
 		peerSet.put( peer2 );
 		peerSet.put( peer3 );
 		//
-		VirtualNode n0 = new VirtualNode( peer1, peerSet);
-		VirtualNode n1 = new VirtualNode( peer2, peerSet);
-		VirtualNode n2 = new VirtualNode( peer3, peerSet);
-		//
+		VirtualNode n0 = new VirtualNode( peer1, peerSet, this);
+		VirtualNode n1 = new VirtualNode( peer2, peerSet, this);
+		VirtualNode n2 = new VirtualNode( peer3, peerSet, this);
 		n0.start();
 		n1.start();
 		n2.start();
 		
+	}
+	
+	
+	public void stopById(long id) {
+		VirtualNode node = nodeSet.get(id);
+		node.stop();
+	}
+	
+	public void startById(long id) throws RaftException {
+		VirtualNode node = nodeSet.get(id);
+		node.start();
 	}
 	
 	

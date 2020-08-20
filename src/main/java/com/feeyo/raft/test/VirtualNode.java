@@ -57,11 +57,14 @@ public class VirtualNode extends RaftNodeAdapter {
 	
 	private volatile boolean isClosed = false;
 	
-	public VirtualNode(Peer peer, PeerSet peerSet) {
+	private VirtualRaftCluster cluster;
+	
+	public VirtualNode(Peer peer, PeerSet peerSet, VirtualRaftCluster cluster) {
 		this.peer = peer;
 		this.peerSet = peerSet;
 		//
-		VirtualRaftCluster.nodeSet.put(peer.getId(), this);
+		this.cluster = cluster;
+		this.cluster.nodeSet.put(peer.getId(), this);
 	}
 	
 	//
@@ -201,7 +204,7 @@ public class VirtualNode extends RaftNodeAdapter {
 									//threadPoolExecutor.execute( new Runnable(){
 										//@Override
 										//public void run() {
-											VirtualNode node = VirtualRaftCluster.nodeSet.get( message.getTo() );
+											VirtualNode node = cluster.nodeSet.get( message.getTo() );
 											if ( node != null )
 												try {
 													//System.out.println( ProtobufUtils.protoToJson( message ) );
@@ -241,7 +244,7 @@ public class VirtualNode extends RaftNodeAdapter {
 	@Override
 	public void onStateChange(long id, StateType newStateType, long leaderId) {
 		//
-		VirtualRaftCluster.leaderId = leaderId;
+		cluster.leaderId = leaderId;
 		System.out.println("$$$$$$$$$$$$$ id=" + id + ",  leaderId=" + leaderId);
 	}
 

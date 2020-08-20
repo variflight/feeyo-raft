@@ -61,28 +61,25 @@ public class RaftClusterTest {
 	static VirtualRaftCluster cluster = null;
 	static HashedWheelTimer wheelTimer = new HashedWheelTimer(new NamedThreadFactory("timer-"), 50, TimeUnit.MILLISECONDS, 4096);
 	
-	static void nextWrite() {
+	private static void nextWrite() {
 		//
 		// 延迟 write
-		wheelTimer.newTimeout(new TimerTask(){
+		wheelTimer.newTimeout(new TimerTask() {
 
 			@Override
 			public void run(Timeout timeout) throws Exception {
 				//
-				if ( cluster != null ) {
+				if (cluster != null) {
 					//
 					int count = 2;
 					long sum = 0;
 					//
-					for( int i =0; i < count; i++) {
+					for (int i = 0; i < count; i++) {
 						long startMs = System.currentTimeMillis();
 						//
 						String cbKey = UUIDUtil.getUuid();
-						Message message =  createMessage(cbKey, 
-								Newdbpb.ColumnFamilyHandle.DefaultCfh, 
-								new byte[]{1,2}, 
-								new byte[]{3,4}, 
-								Newdbpb.Operation.Insert );
+						Message message = createMessage(cbKey, Newdbpb.ColumnFamilyHandle.DefaultCfh,
+								new byte[] { 1, 2 }, new byte[] { 3, 4 }, Newdbpb.Operation.Insert);
 						//
 						SyncWaitCallback c = new SyncWaitCallback();
 						c.cbKey = cbKey;
@@ -90,15 +87,42 @@ public class RaftClusterTest {
 						c.await();
 						sum += System.currentTimeMillis() - startMs;
 					}
-					
-					System.out.println( "sum=" + sum + ", count=" + count);
+
+					System.out.println("sum=" + sum + ", count=" + count);
 				}
-				
 				//
 				nextWrite();
 			}
-			
+
 		}, 15, TimeUnit.SECONDS);
+	}
+	
+	private static volatile long killId = 0;
+	
+	private static void nextRandomStartAndStop() {
+		//
+		// 随机 stop & start
+		wheelTimer.newTimeout(new TimerTask() {
+			@Override
+			public void run(Timeout timeout) throws Exception {
+				//
+				if (cluster != null) {
+					
+					if ( killId == 0 ) {
+						killId = cluster.leaderId;
+						cluster.stopById( killId );
+						System.out.println("##stop node, id=" + killId);
+					} else {
+						System.out.println("##start node, id=" + killId);
+						cluster.startById( killId );
+						killId = 0;
+					}
+				}
+				//
+				nextRandomStartAndStop();
+			}
+
+		}, 90, TimeUnit.SECONDS);
 	}
 	
 	public static void main(String[] args) throws RaftException {
@@ -113,7 +137,7 @@ public class RaftClusterTest {
 		long startWaitMs = System.currentTimeMillis();
 		for(;;) {
 			//
-			if ( VirtualRaftCluster.leaderId > 0 ) {
+			if ( cluster.leaderId > 0 ) {
 				System.out.println("wait leader=" + (System.currentTimeMillis() - startWaitMs ) );
 				break;
 			}
@@ -125,7 +149,10 @@ public class RaftClusterTest {
 		}
 		//
 		nextWrite();
+		//
+		nextRandomStartAndStop();
 		
 	}
+	
 	
 }
