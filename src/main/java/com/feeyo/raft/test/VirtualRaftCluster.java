@@ -18,9 +18,9 @@ public class VirtualRaftCluster {
 	
 	public VirtualRaftCluster() throws RaftException {
 		
-		Peer peer1 = new Peer(1, "127.0.0.1", 8081, false);
-		Peer peer2 = new Peer(2, "127.0.0.1", 8082, false);
-		Peer peer3 = new Peer(3, "127.0.0.1", 8083, false);
+		Peer peer1 = new Peer(1, "127.0.0.1", 8081, false, 260);
+		Peer peer2 = new Peer(2, "127.0.0.1", 8082, false, 80);
+		Peer peer3 = new Peer(3, "127.0.0.1", 8083, false, 40);
 		
 		PeerSet peerSet = new PeerSet();
 		peerSet.put( peer1 );
@@ -39,7 +39,6 @@ public class VirtualRaftCluster {
 	
 	
 	public void syncWait(Message message, SyncWaitCallback c) {
-		
 		if ( leaderId != -1 ) {
 			VirtualNode node = nodeSet.get(leaderId);
 			if ( node != null )
@@ -48,7 +47,6 @@ public class VirtualRaftCluster {
 			///
 			System.out.println( leaderId );
 		}
-		
 	}
 
 }

@@ -85,6 +85,7 @@ public class VirtualNode implements RaftNodeListener {
 		c.setLinearizableReadOption( LinearizableReadOption.FollowerRead );
 		c.setDisableProposalForwarding( false );
 		
+		
 		// set local
 		RaftConfig cfg = new RaftConfig(c);
 		cfg.setLocalPeer( peer );
@@ -325,7 +326,7 @@ public class VirtualNode implements RaftNodeListener {
 
 
 	@Override
-	public boolean isAllowElection() {
+	public boolean isAllowLaunchElection() {
 		return true;
 	}
 

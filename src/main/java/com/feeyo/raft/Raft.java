@@ -760,9 +760,9 @@ public class Raft {
 			//
 			// 是否发起选举
 			// PreVote 预选举阶段之前，会通过先比较自身的 priority 值和 targetPriority 值来决定是否参加本轮的 Leader 选举投票
-			if ( !listener.isAllowElection() )
+			if ( !listener.isAllowLaunchElection() ) {
 				return;
-			//
+			}
 			becomePreCandidate();
 			//
 			voteMsg = MessageType.MsgRequestPreVote; 
@@ -970,7 +970,7 @@ public class Raft {
 				}
 
 				LOGGER.info("self={}, is starting a new election at current term {}", this.id, this.term);
-
+				//
 				// 进行选举
 				if (preVote) {
 					campaign( CampaignType.CAMPAIGN_PRE_ELECTION );	
