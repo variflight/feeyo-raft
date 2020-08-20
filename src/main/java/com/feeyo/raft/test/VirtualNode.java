@@ -14,7 +14,7 @@ import com.feeyo.raft.LinearizableReadOption;
 import com.feeyo.raft.Peer;
 import com.feeyo.raft.PeerSet;
 import com.feeyo.raft.Raft;
-import com.feeyo.raft.RaftNodeListener;
+import com.feeyo.raft.RaftNodeAdapter;
 import com.feeyo.raft.ReadOnlyOption;
 import com.feeyo.raft.StateType;
 import com.feeyo.raft.Errors.RaftException;
@@ -30,7 +30,7 @@ import com.feeyo.raft.util.StandardThreadExecutor;
 import com.feeyo.raft.util.Util;
 import com.google.protobuf.ByteString;
 
-public class VirtualNode implements RaftNodeListener {
+public class VirtualNode extends RaftNodeAdapter {
 
 	// ..
 	public static Map<String, SyncWaitCallback> waitingCallbacks = new ConcurrentHashMap<>();
@@ -85,11 +85,12 @@ public class VirtualNode implements RaftNodeListener {
 		c.setLinearizableReadOption( LinearizableReadOption.FollowerRead );
 		c.setDisableProposalForwarding( false );
 		
-		
 		// set local
 		RaftConfig cfg = new RaftConfig(c);
 		cfg.setLocalPeer( peer );
 		cfg.setPeerSet( peerSet );
+		
+        this.targetPriority = getMaxPriorityOfNodes();
 		
 		//
 		Raft raft = new Raft(c, new MemoryStorage(), this);
@@ -269,21 +270,19 @@ public class VirtualNode implements RaftNodeListener {
 		//
 	}
 
-
 	public void syncWait(final Message message, final SyncWaitCallback c) {
-		if ( raft != null ) {
-			
-			threadPoolExecutor.execute( new Runnable(){
+		if (raft != null) {
 
+			threadPoolExecutor.execute(new Runnable() {
 				@Override
 				public void run() {
-						try {
-							waitingCallbacks.put(c.cbKey, c);
-							
-							raft.step(message);
-						} catch (RaftException e) {
-							e.printStackTrace();
-						}
+					try {
+						waitingCallbacks.put(c.cbKey, c);
+
+						raft.step(message);
+					} catch (RaftException e) {
+						e.printStackTrace();
+					}
 				}
 			});
 		}
@@ -324,10 +323,14 @@ public class VirtualNode implements RaftNodeListener {
 	}
 
 
+	@Override
+	public Peer getPeer() {
+		return this.peer;
+	}
 
 	@Override
-	public boolean isAllowLaunchElection() {
-		return true;
+	public PeerSet getPeerSet() {
+		return this.peerSet;
 	}
 
 }

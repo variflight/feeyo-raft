@@ -58,6 +58,7 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
 		return this.targetPriority;
 	}
 	
+	//
 	// 获取同一Raft组中所有节点的最大优先级值，并更新当前节点的目标优先级值
 	public int getMaxPriorityOfNodes() {
 		int maxPriority = Integer.MIN_VALUE;
@@ -78,5 +79,5 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         //
         LOGGER.info("self={}, priority decay, from:{}, to:{}.", this.getPeer().getId(), prevTargetPriority, this.targetPriority);
     }
-
+    
 }
