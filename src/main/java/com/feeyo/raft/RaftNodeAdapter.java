@@ -43,6 +43,8 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
         // 当前节点 priority值 < 本地全局变量 targetPriority值, 执行目标优先级衰减降级并等待下次选举超时
         if (local.getPriority() < this.targetPriority) {
             this.electionTimeoutCounter++;
+            LOGGER.info("self={}, electionTimeoutCounter:{}", getPeer().getId(), electionTimeoutCounter);
+            //
             if (this.electionTimeoutCounter > 1) {
                 decayTargetPriority();
                 this.electionTimeoutCounter = 0;
@@ -70,10 +72,11 @@ public abstract class RaftNodeAdapter implements RaftNodeListener {
 		return maxPriority;
 	}
 	
-	//
-	// 基于间隙值的衰减目标优先级值
+	/*
+	 * 目标优先级衰减降级函数
+	 */
     private void decayTargetPriority() {
-        // 全局变量 targetPriority 值进行 20% 的衰减
+        // 全局变量 targetPriority 值进行 20% 的衰减，直至衰减值优先级的最小值
         final int gap = Math.max(decayPriorityGap, (this.targetPriority / 5));
         final int prevTargetPriority = this.targetPriority;
         this.targetPriority = Math.max(ElectionPriority.MinValue, (this.targetPriority - gap));
