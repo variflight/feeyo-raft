@@ -59,10 +59,6 @@ public class RaftClusterTest {
 	static VirtualRaftCluster cluster = null;
 	static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 	
-	static void startTask(Runnable task, long initialDelay, long period, TimeUnit unit) {
-		scheduledExecutorService.scheduleAtFixedRate(task, initialDelay, period, unit);
-	}
-	
 	private static void nextWrite() {
 		//
 		// 延迟 write

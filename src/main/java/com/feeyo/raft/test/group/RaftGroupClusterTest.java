@@ -3,6 +3,8 @@ package com.feeyo.raft.test.group;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.feeyo.net.codec.protobuf.ProtobufDecoder;
@@ -12,9 +14,6 @@ import com.feeyo.net.nio.NetSystem;
 import com.feeyo.buffer.BufferPool;
 import com.feeyo.buffer.bucket.BucketBufferPool;
 import com.feeyo.net.nio.util.ExecutorUtil;
-import com.feeyo.net.nio.util.timer.HashedWheelTimer;
-import com.feeyo.net.nio.util.timer.Timeout;
-import com.feeyo.net.nio.util.timer.TimerTask;
 import com.feeyo.raft.Config;
 import com.feeyo.raft.Const;
 import com.feeyo.raft.Errors.RaftException;
@@ -36,7 +35,6 @@ import com.feeyo.raft.proto.Raftpb.KeyValue;
 import com.feeyo.raft.proto.Raftpb.Message;
 import com.feeyo.raft.proto.Raftpb.MessageType;
 import com.feeyo.raft.proto.Newdbpb.ProposeCmd;
-import com.feeyo.raft.util.NamedThreadFactory;
 import com.google.protobuf.ByteString;
 
 //
@@ -166,13 +164,13 @@ public class RaftGroupClusterTest {
 	}
 
 	//
-	static HashedWheelTimer wheelTimer = new HashedWheelTimer(new NamedThreadFactory("timer-"), 50, TimeUnit.MILLISECONDS, 4096);
+	static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
 	static void continueWrite(final RaftGroupServer[] servers) {
 		//
 		// 延迟 write
-		wheelTimer.newTimeout(new TimerTask(){
+		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 			@Override
-			public void run(Timeout timeout) throws Exception {
+			public void run() {
 				//
 				RaftGroupStateMachineAdapter stateMachine = servers[0].getStateMachine();
 				long leaderId = stateMachine.getLeaderId(11);
@@ -208,12 +206,9 @@ public class RaftGroupClusterTest {
 					Reply reply = leaderServer.getRaftCaller().sync( msg );
 					System.out.println("reply=" + reply.code + ", " + new String(reply.msg));
 				}
-				
-				//
-				continueWrite( servers );
 			}
 			
-		}, 15, TimeUnit.SECONDS);
+		}, 15, 15, TimeUnit.SECONDS);
 	}
 	
 	
