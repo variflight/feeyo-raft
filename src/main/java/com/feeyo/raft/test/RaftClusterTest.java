@@ -117,8 +117,6 @@ public class RaftClusterTest {
 						todoId = 0;
 					}
 				}
-				//
-				nextRandomStartAndStop();
 			}
 
 		}, 60, 60, TimeUnit.SECONDS);
