@@ -16,7 +16,7 @@ import com.feeyo.raft.util.Util;
 public class RaftServerDefaultImpl extends RaftServer {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger( RaftServerDefaultImpl.class );
-	
+	//
 	public RaftServerDefaultImpl(RaftConfig raftCfg, StateMachineAdapter stateMachine) {
 		super(raftCfg, stateMachine);
 		this.storage = new MemoryStorage();
@@ -35,7 +35,6 @@ public class RaftServerDefaultImpl extends RaftServer {
 	//
 	@Override
     protected void onNewReady(Ready ready) throws RaftException {
-		//
 		long beginMillis = TimeUtil.currentTimeMillis();
 		//
         // 判断 snapshot 是不是空的，如果不是，那么表明当前节点收到了一个 Snapshot，我们需要去应用这个 snapshot
@@ -76,8 +75,6 @@ public class RaftServerDefaultImpl extends RaftServer {
         	}
         }
         raftStatistics.update( RaftStatistics.BCAST_MSG, TimeUtil.since( tmpBeginMillis ) );
-        
-        //
 		//
         // 判断 committedEntries 是不是空的，如果不是，表明有新的 Log 已经被提交，我们需要去应用这些 Log 到状态机上面了
         // 当然，在应用的时候，也需要保存 apply index
@@ -85,20 +82,18 @@ public class RaftServerDefaultImpl extends RaftServer {
         List<Entry> applyEntries = entriesToApply( ready.committedEntries );
 		applyEntriesToStateMachine( applyEntries );
 		raftStatistics.update( RaftStatistics.APPLY_ENTRIES, TimeUtil.since( tmpBeginMillis ) );
-		
 		//
     	// NewReady Metric
 		raftStatistics.update( RaftStatistics.ON_READY, TimeUtil.since(beginMillis) );
-
+		//
         // Maybe trigger local snapshot
         this.maybeTriggerLocalSnapshot();
-        
+        //
         // Commit ready
         this.commitReady(ready);
     }
 	
 	private void commitReady(Ready ready) throws RaftException {
-		//
 		if (ready.ss != null)
 			this.prevSs = ready.ss;
 		if (ready.hs != null)
@@ -115,10 +110,8 @@ public class RaftServerDefaultImpl extends RaftServer {
 			raft.getRaftLog().appliedTo( snapshotIndex );
 		}
 	}
-	
 	//
     private void bcastMessages(List<Message> messages)  {
-    	
     	if (  Util.isNotEmpty( messages ) ) {
     		// metric counter
 			for(Message msg: messages)
