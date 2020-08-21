@@ -106,9 +106,9 @@ public class RaftClusterTest {
 					if ( todoId == 0 ) {
 						todoId = cluster.leaderId;
 						cluster.stopById( todoId );
-						System.out.println("##stop node, id=" + todoId);
+						System.out.println("############### stop node, id=" + todoId);
 					} else {
-						System.out.println("##restart node, id=" + todoId);
+						System.out.println("############### restart node, id=" + todoId);
 						try {
 							cluster.startById( todoId );
 						} catch (RaftException e) {

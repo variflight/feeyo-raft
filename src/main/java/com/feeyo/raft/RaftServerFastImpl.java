@@ -17,10 +17,10 @@ import com.feeyo.raft.util.Util;
  * TODO: Jepsen test
  * 
  * 对于分布式系统而言，一般会使用如下几种类型的故障进行注入：
- * （1）partition-random-node 和 partition-random-halves 故障是模拟常见的对称网络分区； 
- * （2）kill-random-processes 和 crash-random-nodes 故障是模拟进程崩溃，节点崩溃的情况； 
- * （3）hammer-time 故障是模拟一些慢节点的情况，比如发生 Full GC、OOM 等；
- * （4）bridge 和 partition-majorities-ring 模拟比较极端的非对称网络分区；
+ * 1、partition-random-node 和 partition-random-halves 故障是模拟常见的对称网络分区 
+ * 2、kill-random-processes 和 crash-random-nodes 故障是模拟进程崩溃,节点崩溃的情况
+ * 3、hammer-time 故障是模拟一些慢节点的情况，比如发生 Full GC、OOM 等
+ * 4、bridge 和 partition-majorities-ring 模拟比较极端的非对称网络分区
  * 
  * @author zhuam
  */

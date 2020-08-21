@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.feeyo.net.codec.util.ProtobufUtils;
 import com.feeyo.raft.Config;
 import com.feeyo.raft.Const;
 import com.feeyo.raft.LinearizableReadOption;
@@ -34,28 +36,19 @@ public class VirtualNode extends RaftNodeAdapter {
 
 	// ..
 	public static Map<String, SyncWaitCallback> waitingCallbacks = new ConcurrentHashMap<>();
-	
-    // ThreadPool
-	public static StandardThreadExecutor threadPoolExecutor;
-	
-	static {
-		threadPoolExecutor = new StandardThreadExecutor(20, 100, 10, 
-				new NamedThreadFactory("raftN/threadPool-", true));
-		threadPoolExecutor.prestartAllCoreThreads();
-	}
+	public static StandardThreadExecutor threadPoolExecutor  = new StandardThreadExecutor(20, 100, 10, new NamedThreadFactory("raftN/threadPool-", true));
  	
 	//
 	// Raft tick interval
 	private static final int TICK_TIMEOUT = 100;
-	
-	
+	//
 	private Peer peer;
 	private PeerSet peerSet;
 	
 	private Raft raft;
 	private Thread raftThread;
 	
-	private volatile boolean isClosed = false;
+	private AtomicBoolean isClosed = new AtomicBoolean(true);
 	
 	private VirtualRaftCluster cluster;
 	
@@ -69,7 +62,6 @@ public class VirtualNode extends RaftNodeAdapter {
 	
 	//
 	private Raft createRaft() throws RaftException {
-		//
 		Config c = new Config();
 		c.setElectionTick(50);
 		c.setHeartbeatTick(10);
@@ -126,13 +118,15 @@ public class VirtualNode extends RaftNodeAdapter {
 				raft.addVoterOrLearner(peer.getId(), peer.isLearner());
 			}
 		}
-		
-		
 		return raft;
 	}
 	
 	
 	public void start() throws RaftException {
+		//
+		if ( !this.isClosed.compareAndSet(true, false) ) {
+			return;
+		}
 		//
 		this.raft = createRaft();
 		//
@@ -141,7 +135,7 @@ public class VirtualNode extends RaftNodeAdapter {
 				//
 				long startMs = System.currentTimeMillis();
 				
-				while ( !isClosed ) {
+				while ( !isClosed.get() ) {
 					try {
 						// Tick
 						long currentMs = System.currentTimeMillis();
@@ -198,6 +192,9 @@ public class VirtualNode extends RaftNodeAdapter {
 							ConcurrentLinkedQueue<Message> msgQueue = raft.getMsgs();
 								
 							while ( !msgQueue.isEmpty() ) {
+								//
+								if ( isClosed.get() )
+									break;
 	
 								final Message message = msgQueue.poll();
 								if ( message != null ) {
@@ -207,7 +204,8 @@ public class VirtualNode extends RaftNodeAdapter {
 											VirtualNode node = cluster.nodeSet.get( message.getTo() );
 											if ( node != null )
 												try {
-													//System.out.println( ProtobufUtils.protoToJson( message ) );
+													
+													System.out.println( ProtobufUtils.protoToJson( message ) );
 													
 													node.raft.step( message );
 												} catch (RaftException e) {
@@ -237,7 +235,14 @@ public class VirtualNode extends RaftNodeAdapter {
 	
 	public void stop() {
 		//
-		this.isClosed = true;
+		if ( !this.isClosed.compareAndSet(false, true)) {
+			return;
+		}
+		try {
+			this.raftThread.join();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 
 
