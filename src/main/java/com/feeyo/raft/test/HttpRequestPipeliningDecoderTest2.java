@@ -21,38 +21,29 @@ public class HttpRequestPipeliningDecoderTest2 {
 	public static void main(String[] args) throws UnknownProtocolException, IOException {
 		
 		// 5701160-70183.txt
-		File file = new File("/Users/zhuam/Downloads/xx1/5701160-70183.txt");
+		File file = new File("/Users/zhuam/git/feeyo/feeyo-raft/src/main/java/com/feeyo/raft/test/5701160-70183.txt");
 		ByteSource source = Files.asByteSource(file);
-
 		byte[] result = source.read();
-		
-		
+		//
 		HttpRequestPipeliningDecoder decoder = new HttpRequestPipeliningDecoder();
 		decoder.setReadOffset(0);
-		
+		//
 		int count = 0;
-		
 		for(int i = 0; i< result.length; i++) {
 			byte[] bb = new byte[] { result[i] };
 			List<HttpRequest> rr = decoder.decode( bb );
 			if ( rr != null ) {
-				//
 				for(HttpRequest r: rr) {
-					
 					count++;
-					
 					List<Message> msgs = protobufDecoder.decode( r.getContent() );
-					
 					System.out.println(  "contentLength=" +  r.getContent().length + ", msgSize=" + msgs.size() + ", msgType=" + msgs.get(0).getMsgType() );
 				}
 			}
 		}
-		
-		
+		//
 		System.out.println( "-------------------------" );
 		System.out.println( count );
 		System.out.println( decoder.getBufferSize() + ", " + decoder.getReadOffset());
-
 	}
 
 }

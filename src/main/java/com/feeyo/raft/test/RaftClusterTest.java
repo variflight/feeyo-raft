@@ -2,12 +2,11 @@ package com.feeyo.raft.test;
 
 import com.feeyo.raft.Errors.RaftException;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import com.feeyo.net.codec.protobuf.ProtobufEncoder;
-import com.feeyo.net.nio.util.timer.HashedWheelTimer;
-import com.feeyo.net.nio.util.timer.Timeout;
-import com.feeyo.net.nio.util.timer.TimerTask;
 import com.feeyo.raft.proto.Raftpb.Entry;
 import com.feeyo.raft.proto.Raftpb.EntryType;
 import com.feeyo.raft.proto.Raftpb.KeyValue;
@@ -18,7 +17,6 @@ import com.feeyo.raft.proto.Newdbpb.ColumnFamilyHandle;
 import com.feeyo.raft.proto.Newdbpb.Operation;
 import com.feeyo.raft.proto.Newdbpb.ProposeCmd;
 import com.feeyo.raft.test.VirtualNode.SyncWaitCallback;
-import com.feeyo.raft.util.NamedThreadFactory;
 import com.feeyo.raft.util.UUIDUtil;
 import com.google.protobuf.ByteString;
 
@@ -59,15 +57,18 @@ public class RaftClusterTest {
 	
 	//
 	static VirtualRaftCluster cluster = null;
-	static HashedWheelTimer wheelTimer = new HashedWheelTimer(new NamedThreadFactory("timer-"), 50, TimeUnit.MILLISECONDS, 4096);
+	static ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(5);
+	
+	static void startTask(Runnable task, long initialDelay, long period, TimeUnit unit) {
+		scheduledExecutorService.scheduleAtFixedRate(task, initialDelay, period, unit);
+	}
 	
 	private static void nextWrite() {
 		//
 		// 延迟 write
-		wheelTimer.newTimeout(new TimerTask() {
-
+		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 			@Override
-			public void run(Timeout timeout) throws Exception {
+			public void run() {
 				//
 				if (cluster != null) {
 					//
@@ -90,11 +91,9 @@ public class RaftClusterTest {
 
 					System.out.println("sum=" + sum + ", count=" + count);
 				}
-				//
-				nextWrite();
 			}
 
-		}, 15, TimeUnit.SECONDS);
+		}, 15, 15, TimeUnit.SECONDS);
 	}
 	
 	private static volatile long todoId = 0;
@@ -102,9 +101,9 @@ public class RaftClusterTest {
 	private static void nextRandomStartAndStop() {
 		//
 		// 随机 stop & start
-		wheelTimer.newTimeout(new TimerTask() {
+		scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
 			@Override
-			public void run(Timeout timeout) throws Exception {
+			public void run() {
 				//
 				if (cluster != null) {
 					
@@ -114,7 +113,11 @@ public class RaftClusterTest {
 						System.out.println("##stop node, id=" + todoId);
 					} else {
 						System.out.println("##restart node, id=" + todoId);
-						cluster.startById( todoId );
+						try {
+							cluster.startById( todoId );
+						} catch (RaftException e) {
+							e.printStackTrace();
+						}
 						todoId = 0;
 					}
 				}
@@ -122,7 +125,7 @@ public class RaftClusterTest {
 				nextRandomStartAndStop();
 			}
 
-		}, 60, TimeUnit.SECONDS);
+		}, 60, 60, TimeUnit.SECONDS);
 	}
 	
 	public static void main(String[] args) throws RaftException {
