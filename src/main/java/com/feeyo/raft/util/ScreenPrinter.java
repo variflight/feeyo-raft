@@ -10,10 +10,6 @@ public class ScreenPrinter {
 	
 	private static final PrintStream SCREEN_PRINTER = new PrintStream(System.out);
 	
-	private static int maxPrintRowCount = 1000;
-	private static int lineCount = 0;
-	private static boolean isReachEnd = false;
-	
 	//
 	public static void main(String[] args) {
 		//
@@ -45,12 +41,6 @@ public class ScreenPrinter {
 			printRow(lists, i, maxSizeList);
 		}
 		printBlockLine(maxSizeList);
-		if (isReachEnd) {
-			lineCount += lists.get(0).size() - 1;
-			printCount(lineCount);
-		} else {
-			lineCount += maxPrintRowCount;
-		}
 	}
 
 	private static void printBlockLine(List<Integer> maxSizeList) {
@@ -69,16 +59,7 @@ public class ScreenPrinter {
 		}
 		println();
 	}
-	
-	
-	private static void printCount(int cnt) {
-		if (cnt == 0) {
-			println("Empty set.");
-		} else {
-			println("Total line number = " + cnt);
-		}
-	}
-	  
+
 	private static void printf(String format, Object... args) {
 		SCREEN_PRINTER.printf(format, args);
 	}
