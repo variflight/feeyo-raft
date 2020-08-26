@@ -9,9 +9,8 @@ import java.net.URL;
 class HttpURLConnectionUtil {
 
     public static Result tryGet(String uri, byte[] body) throws IOException  {
-    	
+    	//
     	Result result = null;
-
         HttpURLConnection connection = null;
         try {
             URL url = new URL(uri);
@@ -33,10 +32,8 @@ class HttpURLConnectionUtil {
             result = new Result();
             result.code = connection.getResponseCode();
             result.content = ByteStreams.toByteArray(connection.getInputStream());
-            
             //
             connection.getInputStream().close();
-
         } finally {
             if (connection != null) {
                 connection.disconnect();
@@ -44,12 +41,14 @@ class HttpURLConnectionUtil {
         }
         return result;
     }
-    
+    //
     public static class Result {
     	public int code;
     	public byte[] content;
     }
     
+    ///
+    //
     public static void main(String[] args) {
     	try {
 			HttpURLConnectionUtil.tryGet("http://127.0.0.1:8080/raft/cli?cmd=getNodes", null);
