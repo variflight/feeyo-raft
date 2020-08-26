@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class HttpURLConnectionUtil {
+class HttpURLConnectionUtil {
 
     public static Result tryGet(String uri, byte[] body) throws IOException  {
     	

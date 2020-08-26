@@ -32,7 +32,7 @@ public class ScreenPrinter {
 			lists.add( column_list );
 			maxSizeList.add(20);
 		}
-		
+		//
 		output(lists, maxSizeList);
 	}
 
