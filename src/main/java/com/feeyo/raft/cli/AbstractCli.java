@@ -9,6 +9,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.lang3.ArrayUtils;
 
+import com.feeyo.raft.util.ScreenPrinter;
 import com.feeyo.raft.util.Versions;
 
 public abstract class AbstractCli {
@@ -151,8 +152,8 @@ public abstract class AbstractCli {
 				String isLearner = cmdArgs.get(4);
 				
 				String hostAndPort = host + ":" + port;
-				String result = CliUtil.addNode(hostAndPort, id, ip, port, isLearner);
-				System.out.println( result );
+				CliRpc.ScreenFmtData data = CliRpc.addNode(hostAndPort, id, ip, port, isLearner);
+				ScreenPrinter.output(data.lists, data.maxSizeList);
 				
 			} catch (CliException e) {
 				System.out.println("Failed to add node because: " + e.getMessage());
@@ -171,8 +172,8 @@ public abstract class AbstractCli {
 				String id = cmdArgs.get(1);
 				
 				String hostAndPort = host + ":" + port;
-				String result = CliUtil.removeNode(hostAndPort, id);
-				System.out.println( result );
+				CliRpc.ScreenFmtData data = CliRpc.removeNode(hostAndPort, id);
+				ScreenPrinter.output(data.lists, data.maxSizeList);
 				
 			} catch (CliException e) {
 				System.out.println("Failed to remove node because: " + e.getMessage());
@@ -191,8 +192,8 @@ public abstract class AbstractCli {
 				String id = cmdArgs.get(1);
 				
 				String hostAndPort = host + ":" + port;
-				String result = CliUtil.transferLeader(hostAndPort, id);
-				System.out.println( result );
+				CliRpc.ScreenFmtData data = CliRpc.transferLeader(hostAndPort, id);
+				ScreenPrinter.output(data.lists, data.maxSizeList);
 				
 			} catch (CliException e) {
 				System.out.println("Failed to transfer leader because: " + e.getMessage());
@@ -205,9 +206,8 @@ public abstract class AbstractCli {
 			
 			try {
 				String hostAndPort = host + ":" + port;
-				String result = CliUtil.getNodes(hostAndPort);
-				//
-				System.out.println( result );
+				CliRpc.ScreenFmtData data = CliRpc.getNodes(hostAndPort);
+				ScreenPrinter.output(data.lists, data.maxSizeList);
 				
 			} catch (CliException e) {
 				System.out.println("Failed to get nodes because: " + e.getMessage());
@@ -220,9 +220,8 @@ public abstract class AbstractCli {
 			
 			try {
 				String hostAndPort = host + ":" + port;
-				String result = CliUtil.getNodePrs(hostAndPort);
-				//
-				System.out.println( result );
+				CliRpc.ScreenFmtData data = CliRpc.getNodePrs(hostAndPort);
+				ScreenPrinter.output(data.lists, data.maxSizeList);
 				
 			} catch (CliException e) {
 				System.out.println("Failed to get node prs because: " + e.getMessage());
