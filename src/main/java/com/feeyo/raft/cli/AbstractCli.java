@@ -114,8 +114,9 @@ public abstract class AbstractCli {
 	protected static void displayLogo(){
 		System.out.println("NewdB alpha1");
 	}
-
+	
 	//
+	@SuppressWarnings("unchecked")
 	protected static OPERATION_RESULT handleInputInputCmd(String cmd, List<String> cmdArgs){
 		//
 		String specialCmd = cmd.toLowerCase().trim();
@@ -127,7 +128,6 @@ public abstract class AbstractCli {
 		if(specialCmd.equals(HELP_COMMAND) ) {
 			System.out.println("Require more params input, eg. ./raftCli.sh -h xxx.xxx.xxx.xxx -p xxxx");
 			System.out.println("For more information, please check the following hint.");
-			
 			System.out.println("addNode [id][ip][port][learner]" );
 			System.out.println("removeNode [id]" );
 			System.out.println("transferLeader [id]" );
@@ -137,9 +137,9 @@ public abstract class AbstractCli {
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
 		
+		///
 		//
 		if (specialCmd.startsWith( ADD_NODE_COMMAND.toLowerCase() )) {
-			
 			if ( cmdArgs.size() < 5 ) {
 				System.out.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
@@ -150,19 +150,20 @@ public abstract class AbstractCli {
 				String ip = cmdArgs.get(2);
 				String port = cmdArgs.get(3);
 				String isLearner = cmdArgs.get(4);
-				
 				String hostAndPort = host + ":" + port;
-				CliRpc.ScreenFmtData data = CliRpc.addNode(hostAndPort, id, ip, port, isLearner);
-				ScreenPrinter.output(data.lists, data.maxSizeList);
-				
+				//
+				Object[] data = CliRpc.addNode(hostAndPort, id, ip, port, isLearner);
+				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
+				//
 			} catch (CliException e) {
 				System.out.println("Failed to add node because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
 
+		///
+		//
 		if(specialCmd.startsWith( REMOVE_NODE_COMMAND.toLowerCase() )){
-			
 			if ( cmdArgs.size() < 2 ) {
 				System.out.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
@@ -170,19 +171,20 @@ public abstract class AbstractCli {
 			
 			try {
 				String id = cmdArgs.get(1);
-				
 				String hostAndPort = host + ":" + port;
-				CliRpc.ScreenFmtData data = CliRpc.removeNode(hostAndPort, id);
-				ScreenPrinter.output(data.lists, data.maxSizeList);
-				
+				//
+				Object[] data = CliRpc.removeNode(hostAndPort, id);
+				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
+				//
 			} catch (CliException e) {
 				System.out.println("Failed to remove node because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
 
+		///
+		//
 		if(specialCmd.startsWith( TRANSFER_LEADER_COMMAND.toLowerCase() )){
-			
 			if ( cmdArgs.size() < 2 ) {
 				System.out.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
@@ -190,53 +192,52 @@ public abstract class AbstractCli {
 			
 			try {
 				String id = cmdArgs.get(1);
-				
 				String hostAndPort = host + ":" + port;
-				CliRpc.ScreenFmtData data = CliRpc.transferLeader(hostAndPort, id);
-				ScreenPrinter.output(data.lists, data.maxSizeList);
-				
+				//
+				Object[] data = CliRpc.transferLeader(hostAndPort, id);
+				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
+				//
 			} catch (CliException e) {
 				System.out.println("Failed to transfer leader because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 			
 		}
-
+		
+		///
+		//
 		if(specialCmd.startsWith( GET_NODES_COMMAND.toLowerCase() )){
-			
 			try {
 				String hostAndPort = host + ":" + port;
-				CliRpc.ScreenFmtData data = CliRpc.getNodes(hostAndPort);
-				ScreenPrinter.output(data.lists, data.maxSizeList);
-				
+				//
+				Object[] data = CliRpc.getNodes(hostAndPort);
+				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
+				//
 			} catch (CliException e) {
 				System.out.println("Failed to get nodes because: " + e.getMessage());
 			}
-			
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
-
+		
+		///
+		//
 		if(specialCmd.startsWith( GET_NODE_PRS_COMMAND.toLowerCase() )) {
-			
 			try {
 				String hostAndPort = host + ":" + port;
-				CliRpc.ScreenFmtData data = CliRpc.getNodePrs(hostAndPort);
-				ScreenPrinter.output(data.lists, data.maxSizeList);
-				
+				//
+				Object[] data = CliRpc.getNodePrs(hostAndPort);
+				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
+				//
 			} catch (CliException e) {
 				System.out.println("Failed to get node prs because: " + e.getMessage());
 			}
-			
 			return OPERATION_RESULT.CONTINUE_OPER;
-		
 		}
 		
 		if( specialCmd.startsWith( VERSION_COMMAND.toLowerCase()) ) {
-			//
 			System.out.println( Versions.RAFT_VERSION );
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
-		
 		return OPERATION_RESULT.NO_OPER;
 	}
 
