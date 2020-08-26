@@ -1,6 +1,8 @@
 package com.feeyo.raft.cli;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +10,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.feeyo.util.internal.Utf8Util;
+import com.google.common.io.ByteStreams;
 
 public class CliRpc {
 	//
@@ -19,6 +22,7 @@ public class CliRpc {
 			this.maxSizeList = maxSizeList;
 		}
 	}
+	///
 	//
 	private static ScreenFmtData toScreenFmtData(String[] columnNames, Object[][] data) {
 		List<List<String>> lists = new ArrayList<>();
@@ -58,21 +62,59 @@ public class CliRpc {
 		return new ScreenFmtData(lists, maxSizeList);
 	}
 	
+	///
+	//
+    private static GetResponse tryHttpGet(String uri, byte[] body) throws IOException  {
+    	GetResponse response = null;
+        HttpURLConnection connection = null;
+        try {
+            URL url = new URL(uri);
+            connection = (HttpURLConnection) url.openConnection();
+            connection.setInstanceFollowRedirects(false);
+            connection.setReadTimeout(3000);
+            connection.setConnectTimeout(3000);
+            connection.setUseCaches(false);
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            connection.setRequestMethod("POST");
+            connection.setFixedLengthStreamingMode( body != null ? body.length : 0);
+            if ( body != null ) {
+            	connection.getOutputStream().write(body, 0, body.length);
+                connection.getOutputStream().flush();
+                connection.getOutputStream().close();
+            } 
+            response = new GetResponse();
+            response.code = connection.getResponseCode();
+            response.content = ByteStreams.toByteArray(connection.getInputStream());
+            //
+            connection.getInputStream().close();
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+        return response;
+    }
+    //
+    static class GetResponse {
+    	public int code;
+    	public byte[] content;
+    }
+	
 	//
 	public static ScreenFmtData addNode(String hostAndPort, 
 			String id, String ip, String port, String isLearner) throws CliException {
 		//
 		try {
-
 			String url = String.format("http://%s/raft/cli?cmd=addNode&id=%s&ip=%s&port=%s&isLearner=%s", 
 					hostAndPort, id, ip, port, isLearner);
-			
-			HttpURLConnectionUtil.Result result = HttpURLConnectionUtil.tryGet( url, null);
-			if ( result != null && result.code == 200 ) {
+			//
+			GetResponse response = tryHttpGet( url, null);
+			if ( response != null && response.code == 200 ) {
 				
 				String[] columnNames = { "code", "data" };
 				Object[][] data = new Object[1][2];
-				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8(result.content) );
+				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8(response.content) );
 				data[0][0] = jsonObject1.getIntValue("code");
 				data[0][1] = jsonObject1.getString("data");
 				
@@ -86,8 +128,8 @@ public class CliRpc {
 				String[] columnNames = { "code", "content" };
 				Object[][] data = new Object[1][2];
 				
-				data[0][0] = result.code;
-				data[0][1] = new String( result.content );
+				data[0][0] = response.code;
+				data[0][1] = new String( response.content );
 				return toScreenFmtData(columnNames, data);
 			}
 			
@@ -102,11 +144,11 @@ public class CliRpc {
 		try {
 			String url = String.format("http://%s/raft/cli?cmd=removeNode&id=%s", hostAndPort, id);
 			//
-			HttpURLConnectionUtil.Result result = HttpURLConnectionUtil.tryGet( url, null);
-			if ( result != null && result.code == 200 ) {
+			GetResponse response = tryHttpGet( url, null);
+			if ( response != null && response.code == 200 ) {
 				String[] columnNames = { "code", "data" };
 				Object[][] data = new Object[1][2];
-				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8(result.content) );
+				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8(response.content) );
 				data[0][0] = jsonObject1.getIntValue("code");
 				data[0][1] = jsonObject1.getString("data");
 				
@@ -115,8 +157,8 @@ public class CliRpc {
 			} else {
 				String[] columnNames = { "code", "content" };
 				Object[][] data = new Object[1][2];
-				data[0][0] = result.code;
-				data[0][1] = new String( result.content );
+				data[0][0] = response.code;
+				data[0][1] = new String( response.content );
 				return toScreenFmtData(columnNames, data);
 			}
 
@@ -130,11 +172,11 @@ public class CliRpc {
 		try {
 			String url = String.format("http://%s/raft/cli?cmd=transferLeader&id=%s", hostAndPort, id);
 			//
-			HttpURLConnectionUtil.Result result = HttpURLConnectionUtil.tryGet( url, null);
-			if ( result != null && result.code == 200 ) {
+			GetResponse response = tryHttpGet( url, null);
+			if ( response != null && response.code == 200 ) {
 				String[] columnNames = { "code", "data" };
 				Object[][] data = new Object[1][2];
-				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( result.content ) );
+				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( response.content ) );
 				data[0][0] = jsonObject1.getIntValue("code");
 				data[0][1] = jsonObject1.getString("data");
 				
@@ -143,8 +185,8 @@ public class CliRpc {
 			} else {
 				String[] columnNames = { "code", "content" };
 				Object[][] data = new Object[1][2];
-				data[0][0] = result.code;
-				data[0][1] = new String( result.content );
+				data[0][0] = response.code;
+				data[0][1] = new String( response.content );
 				return toScreenFmtData(columnNames, data);
 			}
 
@@ -158,12 +200,11 @@ public class CliRpc {
 		try {
 			String url = String.format("http://%s/raft/cli?cmd=getNodes", hostAndPort);
 			//
-			HttpURLConnectionUtil.Result result = HttpURLConnectionUtil.tryGet( url, null);
-			if ( result != null && result.code == 200 ) {
-				
-				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( result.content ) );
+			GetResponse response = tryHttpGet( url, null);
+			if ( response != null && response.code == 200 ) {
+				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( response.content ) );
 				JSONArray jsonArray1 = jsonObject1.getJSONArray("data");
-
+				//
 				String[] columnNames = { "id", "ip", "port", "state" };
 				Object[][] data = new Object[ jsonArray1.size() ][4];
 				for(int i = 0; i < jsonArray1.size(); i++){
@@ -178,8 +219,8 @@ public class CliRpc {
 			} else {
 				String[] columnNames = { "code", "content" };
 				Object[][] data = new Object[1][2];
-				data[0][0] = result.code;
-				data[0][1] = new String( result.content );
+				data[0][0] = response.code;
+				data[0][1] = new String( response.content );
 				return toScreenFmtData(columnNames, data);
 			}
 			
@@ -195,10 +236,9 @@ public class CliRpc {
 		try {
 			String url = String.format("http://%s/raft/cli?cmd=getNodePrs", hostAndPort);
 			//
-			HttpURLConnectionUtil.Result result = HttpURLConnectionUtil.tryGet( url, null);
-			if ( result != null && result.code == 200 ) {
-				
-				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( result.content ) );
+			GetResponse response = tryHttpGet( url, null);
+			if ( response != null && response.code == 200 ) {
+				JSONObject jsonObject1 = JSON.parseObject( Utf8Util.readUtf8( response.content ) );
 				JSONArray jsonArray1 = jsonObject1.getJSONArray("data");
 				
 				String[] columnNames = { "id", "matched", "nextIndex", "pendingSnapshot", "isRecentActive", "isLearner", "isPaused", "state" };
@@ -218,11 +258,10 @@ public class CliRpc {
 				return toScreenFmtData(columnNames, columnData);
 				
 			} else {
-				
 				String[] columnNames = { "code", "content" };
 				Object[][] columnData = new Object[1][2];
-				columnData[0][0] = result.code;
-				columnData[0][1] = Utf8Util.readUtf8( result.content );
+				columnData[0][0] = response.code;
+				columnData[0][1] = Utf8Util.readUtf8( response.content );
 				return toScreenFmtData(columnNames, columnData);
 			}
 			
