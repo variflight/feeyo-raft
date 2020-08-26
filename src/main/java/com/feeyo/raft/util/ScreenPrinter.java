@@ -60,15 +60,19 @@ public class ScreenPrinter {
 		println();
 	}
 
-	private static void printf(String format, Object... args) {
+	public static void printf(String format, Object... args) {
 		SCREEN_PRINTER.printf(format, args);
 	}
+	
+	public static void print(String msg) {
+		SCREEN_PRINTER.print(msg);
+	}
 
-	private static void println() {
+	public static void println() {
 		SCREEN_PRINTER.println();
 	}
 
-	private static void println(String msg) {
+	public static void println(String msg) {
 		SCREEN_PRINTER.println(msg);
 	}
 }

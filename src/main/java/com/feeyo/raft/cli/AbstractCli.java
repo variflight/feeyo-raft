@@ -98,8 +98,8 @@ public abstract class AbstractCli {
 		if (str == null) {
 			if(isRequired) {
 				String msg = String.format("%s: Required values for option '%s' not provided", RAFT_CLI_PREFIX, name);
-				System.out.println(msg);
-				System.out.println("Use -help for more information");
+				ScreenPrinter.println(msg);
+				ScreenPrinter.println("Use -help for more information");
 				throw new CliException(msg);
 			} else if (defaultValue == null){
 				String msg = String.format("%s: Required values for option '%s' is null.", RAFT_CLI_PREFIX, name);
@@ -112,7 +112,7 @@ public abstract class AbstractCli {
 	}
 	
 	protected static void displayLogo(){
-		System.out.println("NewdB alpha1");
+		ScreenPrinter.println("NewdB alpha1");
 	}
 	
 	//
@@ -121,18 +121,18 @@ public abstract class AbstractCli {
 		//
 		String specialCmd = cmd.toLowerCase().trim();
 		if (specialCmd.equals(QUIT_COMMAND) || specialCmd.equals(EXIT_COMMAND)) {
-			System.out.println(specialCmd + " normally");
+			ScreenPrinter.println(specialCmd + " normally");
 			return OPERATION_RESULT.RETURN_OPER;
 		}
 		
 		if(specialCmd.equals(HELP_COMMAND) ) {
-			System.out.println("Require more params input, eg. ./raftCli.sh -h xxx.xxx.xxx.xxx -p xxxx");
-			System.out.println("For more information, please check the following hint.");
-			System.out.println("addNode [id][ip][port][learner]" );
-			System.out.println("removeNode [id]" );
-			System.out.println("transferLeader [id]" );
-			System.out.println("getNodes" );
-			System.out.println("getNodePrs" );
+			ScreenPrinter.println("Require more params input, eg. ./raftCli.sh -h xxx.xxx.xxx.xxx -p xxxx");
+			ScreenPrinter.println("For more information, please check the following hint.");
+			ScreenPrinter.println("addNode [id][ip][port][learner]" );
+			ScreenPrinter.println("removeNode [id]" );
+			ScreenPrinter.println("transferLeader [id]" );
+			ScreenPrinter.println("getNodes" );
+			ScreenPrinter.println("getNodePrs" );
 
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
@@ -141,7 +141,7 @@ public abstract class AbstractCli {
 		//
 		if (specialCmd.startsWith( ADD_NODE_COMMAND.toLowerCase() )) {
 			if ( cmdArgs.size() < 5 ) {
-				System.out.println("args error " );
+				ScreenPrinter.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
 			}
 			
@@ -156,7 +156,7 @@ public abstract class AbstractCli {
 				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
 				//
 			} catch (CliException e) {
-				System.out.println("Failed to add node because: " + e.getMessage());
+				ScreenPrinter.println("Failed to add node because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
@@ -165,7 +165,7 @@ public abstract class AbstractCli {
 		//
 		if(specialCmd.startsWith( REMOVE_NODE_COMMAND.toLowerCase() )){
 			if ( cmdArgs.size() < 2 ) {
-				System.out.println("args error " );
+				ScreenPrinter.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
 			}
 			
@@ -177,7 +177,7 @@ public abstract class AbstractCli {
 				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
 				//
 			} catch (CliException e) {
-				System.out.println("Failed to remove node because: " + e.getMessage());
+				ScreenPrinter.println("Failed to remove node because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
@@ -186,7 +186,7 @@ public abstract class AbstractCli {
 		//
 		if(specialCmd.startsWith( TRANSFER_LEADER_COMMAND.toLowerCase() )){
 			if ( cmdArgs.size() < 2 ) {
-				System.out.println("args error " );
+				ScreenPrinter.println("args error " );
 				return OPERATION_RESULT.CONTINUE_OPER;
 			}
 			
@@ -198,7 +198,7 @@ public abstract class AbstractCli {
 				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
 				//
 			} catch (CliException e) {
-				System.out.println("Failed to transfer leader because: " + e.getMessage());
+				ScreenPrinter.println("Failed to transfer leader because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 			
@@ -214,7 +214,7 @@ public abstract class AbstractCli {
 				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
 				//
 			} catch (CliException e) {
-				System.out.println("Failed to get nodes because: " + e.getMessage());
+				ScreenPrinter.println("Failed to get nodes because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
@@ -229,13 +229,13 @@ public abstract class AbstractCli {
 				ScreenPrinter.output((List<List<String>>)data[0], (List<Integer>)data[1]);
 				//
 			} catch (CliException e) {
-				System.out.println("Failed to get node prs because: " + e.getMessage());
+				ScreenPrinter.println("Failed to get node prs because: " + e.getMessage());
 			}
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
 		
 		if( specialCmd.startsWith( VERSION_COMMAND.toLowerCase()) ) {
-			System.out.println( Versions.RAFT_VERSION );
+			ScreenPrinter.println( Versions.RAFT_VERSION );
 			return OPERATION_RESULT.CONTINUE_OPER;
 		}
 		return OPERATION_RESULT.NO_OPER;
