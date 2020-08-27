@@ -112,7 +112,7 @@ public abstract class AbstractCli {
 	}
 	
 	protected static void displayLogo(){
-		ScreenPrinter.println("NewdB alpha1");
+		ScreenPrinter.println("RAFT 1.0.20200826 beta");
 	}
 	
 	//
