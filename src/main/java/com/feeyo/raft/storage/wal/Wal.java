@@ -22,6 +22,8 @@ import com.feeyo.raft.proto.Raftpb.Entry;
 import com.feeyo.raft.proto.Raftpb.HardState;
 import com.feeyo.raft.storage.wal.proto.Walpb;
 import com.feeyo.raft.util.Util;
+import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.MessageLite;
 import com.feeyo.raft.util.Pair;
 import com.feeyo.raft.util.ProtobufCodedOutputUtil;
 
@@ -181,6 +183,7 @@ public class Wal {
 		}
 	}
 	
+	//
 	// ------------------------------------------------ save ------------------------------------------------
 	//
 	private void saveEntry(List<Entry> entries) throws RaftException {

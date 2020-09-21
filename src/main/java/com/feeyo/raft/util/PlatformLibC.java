@@ -1,4 +1,4 @@
-package com.feeyo.raft.storage.wal;
+package com.feeyo.raft.util;
 
 import com.sun.jna.Library;
 import com.sun.jna.Native;
@@ -14,8 +14,20 @@ public class PlatformLibC {
 	
     private static final boolean isWindows = Platform.isWindows();
     private static CLibrary cLibrary = CLibrary.INSTANCE;
+    //
+    public static final int  MADV_WILLNEED = 3;
+    public static final int  MADV_DONTNEED = 4;
+
+    public static final int  MCL_CURRENT   = 1;
+    public static final int  MCL_FUTURE    = 2;
+    public static final int  MCL_ONFAULT   = 4;
     
-    public static final int MADV_WILLNEED = 3;
+    /* sync memory asynchronously */
+    int  MS_ASYNC      = 0x0001;
+    /* invalidate mappings & caches */
+    int  MS_INVALIDATE = 0x0002;
+    /* synchronous memory sync */
+    int  MS_SYNC       = 0x0004;
     
     
     /**
