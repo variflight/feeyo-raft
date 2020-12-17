@@ -44,7 +44,6 @@ public class RaftCliRequestHandler implements RequestHandler {
 	
 	@Override
 	public void handle(HttpConnection conn, List<HttpRequest> requestList) {
-		
 		try {
 			String queryStr = requestList.get(0).getUri();
 			Map<String, String> paramters = UriUtil.parseParameters( queryStr );

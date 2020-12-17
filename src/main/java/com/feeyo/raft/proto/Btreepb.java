@@ -130,6 +130,16 @@ public final class Btreepb {
      * <code>bytes value = 2;</code>
      */
     com.google.protobuf.ByteString getValue();
+
+    /**
+     * <code>string category = 3;</code>
+     */
+    java.lang.String getCategory();
+    /**
+     * <code>string category = 3;</code>
+     */
+    com.google.protobuf.ByteString
+        getCategoryBytes();
   }
   /**
    * Protobuf type {@code raft.Element}
@@ -146,6 +156,7 @@ public final class Btreepb {
     private Element() {
       key_ = "";
       value_ = com.google.protobuf.ByteString.EMPTY;
+      category_ = "";
     }
 
     @java.lang.Override
@@ -188,6 +199,12 @@ public final class Btreepb {
             case 18: {
 
               value_ = input.readBytes();
+              break;
+            }
+            case 26: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              category_ = s;
               break;
             }
           }
@@ -257,6 +274,40 @@ public final class Btreepb {
       return value_;
     }
 
+    public static final int CATEGORY_FIELD_NUMBER = 3;
+    private volatile java.lang.Object category_;
+    /**
+     * <code>string category = 3;</code>
+     */
+    public java.lang.String getCategory() {
+      java.lang.Object ref = category_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        category_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string category = 3;</code>
+     */
+    public com.google.protobuf.ByteString
+        getCategoryBytes() {
+      java.lang.Object ref = category_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        category_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
     private byte memoizedIsInitialized = -1;
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
@@ -275,6 +326,9 @@ public final class Btreepb {
       if (!value_.isEmpty()) {
         output.writeBytes(2, value_);
       }
+      if (!getCategoryBytes().isEmpty()) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 3, category_);
+      }
       unknownFields.writeTo(output);
     }
 
@@ -289,6 +343,9 @@ public final class Btreepb {
       if (!value_.isEmpty()) {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, value_);
+      }
+      if (!getCategoryBytes().isEmpty()) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, category_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -310,6 +367,8 @@ public final class Btreepb {
           .equals(other.getKey());
       result = result && getValue()
           .equals(other.getValue());
+      result = result && getCategory()
+          .equals(other.getCategory());
       result = result && unknownFields.equals(other.unknownFields);
       return result;
     }
@@ -325,6 +384,8 @@ public final class Btreepb {
       hash = (53 * hash) + getKey().hashCode();
       hash = (37 * hash) + VALUE_FIELD_NUMBER;
       hash = (53 * hash) + getValue().hashCode();
+      hash = (37 * hash) + CATEGORY_FIELD_NUMBER;
+      hash = (53 * hash) + getCategory().hashCode();
       hash = (29 * hash) + unknownFields.hashCode();
       memoizedHashCode = hash;
       return hash;
@@ -458,6 +519,8 @@ public final class Btreepb {
 
         value_ = com.google.protobuf.ByteString.EMPTY;
 
+        category_ = "";
+
         return this;
       }
 
@@ -482,6 +545,7 @@ public final class Btreepb {
         com.feeyo.raft.proto.Btreepb.Element result = new com.feeyo.raft.proto.Btreepb.Element(this);
         result.key_ = key_;
         result.value_ = value_;
+        result.category_ = category_;
         onBuilt();
         return result;
       }
@@ -529,6 +593,10 @@ public final class Btreepb {
         }
         if (other.getValue() != com.google.protobuf.ByteString.EMPTY) {
           setValue(other.getValue());
+        }
+        if (!other.getCategory().isEmpty()) {
+          category_ = other.category_;
+          onChanged();
         }
         this.mergeUnknownFields(other.unknownFields);
         onChanged();
@@ -651,6 +719,75 @@ public final class Btreepb {
       public Builder clearValue() {
         
         value_ = getDefaultInstance().getValue();
+        onChanged();
+        return this;
+      }
+
+      private java.lang.Object category_ = "";
+      /**
+       * <code>string category = 3;</code>
+       */
+      public java.lang.String getCategory() {
+        java.lang.Object ref = category_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          category_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string category = 3;</code>
+       */
+      public com.google.protobuf.ByteString
+          getCategoryBytes() {
+        java.lang.Object ref = category_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          category_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string category = 3;</code>
+       */
+      public Builder setCategory(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        category_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string category = 3;</code>
+       */
+      public Builder clearCategory() {
+        
+        category_ = getDefaultInstance().getCategory();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string category = 3;</code>
+       */
+      public Builder setCategoryBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        category_ = value;
         onChanged();
         return this;
       }
@@ -1574,12 +1711,13 @@ public final class Btreepb {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rbtreepb.proto\022\004raft\032\014raftpb.proto\"%\n\007E" +
-      "lement\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\"E\n\nEl" +
-      "ementCmd\022\033\n\002op\030\001 \001(\0162\017.raft.Operation\022\032\n" +
-      "\003ele\030\002 \003(\0132\r.raft.Element*#\n\tOperation\022\n" +
-      "\n\006Insert\020\000\022\n\n\006Delete\020\001B!\n\024com.feeyo.raft" +
-      ".protoB\007BtreepbH\001P\000b\006proto3"
+      "\n\rbtreepb.proto\022\004raft\032\014raftpb.proto\"7\n\007E" +
+      "lement\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001(\014\022\020\n\010ca" +
+      "tegory\030\003 \001(\t\"E\n\nElementCmd\022\033\n\002op\030\001 \001(\0162\017" +
+      ".raft.Operation\022\032\n\003ele\030\002 \003(\0132\r.raft.Elem" +
+      "ent*#\n\tOperation\022\n\n\006Insert\020\000\022\n\n\006Delete\020\001" +
+      "B!\n\024com.feeyo.raft.protoB\007BtreepbH\001P\000b\006p" +
+      "roto3"
     };
     com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
         new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
@@ -1599,7 +1737,7 @@ public final class Btreepb {
     internal_static_raft_Element_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_raft_Element_descriptor,
-        new java.lang.String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", "Category", });
     internal_static_raft_ElementCmd_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_raft_ElementCmd_fieldAccessorTable = new

@@ -15,6 +15,7 @@ enum Operation {
 message Element {
 	string key = 1;
 	bytes value = 2;
+	string category = 3;
 }
 
 message ElementCmd {

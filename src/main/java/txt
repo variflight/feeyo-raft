@@ -1,3 +1,0 @@
-SELECT fid, forg, fdst, fnumber, fdeptime, farrtime, fpubtime, ftype, fday, fmark, fstop, fcodeshare, fstartdate,fenddate, fno, fcodesharenumber, fcodeshared, faircode, fupdateshare, farrday, forgctry, fdstctry, fcategory, food, fservice FROM fa_flight WHERE fnumber='FM815' AND fmark NOT IN (5, 7) ORDER BY fstartdate
-
-SELECT forg, fdst, fnumber, fdeptime, fmark, fstartdate,fenddate, fno FROM fa_flight WHERE fnumber='FM815' AND fmark NOT IN (5, 7) ORDER BY fstartdate
