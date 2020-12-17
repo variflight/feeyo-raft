@@ -8,7 +8,6 @@ option optimize_for = SPEED;
 import public "raftpb.proto";
 
 
-
 message RaftGroupMessage {
     uint64 region_id = 1;
     Peer from_peer = 2;
