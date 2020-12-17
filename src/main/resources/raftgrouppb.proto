@@ -74,4 +74,3 @@ message Peer {
     uint64 store_id = 2;
     bool is_learner = 3;
 }
-

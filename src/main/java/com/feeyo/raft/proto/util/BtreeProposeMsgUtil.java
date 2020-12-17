@@ -30,12 +30,38 @@ public class BtreeProposeMsgUtil {
 
     //
     // 构造 raft propose 消息
-
+    //
     public static Message createProposeMessage(String key, ByteBuffer value, Operation operation) {
 
     	Element ele = Element.newBuilder() //
                 .setKey(key) //
                 .setValue(value == null ? EMPTY_BYTE_STRING : ZeroByteStringHelper.wrap(value)) //
+                .build();
+
+    	ElementCmd cmd = ElementCmd.newBuilder() //
+                .addEle(ele) //
+                .setOp(operation) //
+                .build();
+        //
+        byte[] data = protobufEncoder.encode(cmd);
+
+        Entry entry = Entry.newBuilder() //
+                .setEntryType(EntryType.EntryNormal) //
+                .setData(ZeroByteStringHelper.wrap(data)) //
+                .setCbkey(ObjectIdUtil.getId()).build();
+
+        return Message.newBuilder() //
+                .setMsgType(MessageType.MsgPropose) //
+                .addEntries(entry) //
+                .build();
+    }
+    
+    public static Message createProposeMessage(String category, String key, ByteBuffer value, Operation operation) {
+
+    	Element ele = Element.newBuilder() //
+                .setKey(key) //
+                .setValue(value == null ? EMPTY_BYTE_STRING : ZeroByteStringHelper.wrap(value)) //
+                .setCategory(category)
                 .build();
 
     	ElementCmd cmd = ElementCmd.newBuilder() //
@@ -67,7 +93,6 @@ public class BtreeProposeMsgUtil {
 
         //
         for (ElementCmd command : commands) {
-
         	//
             // 不论是累计的size还是某一条size超过阈值都会触发新的Entry生成
         	int commandSize = command.getSerializedSize();
