@@ -27,10 +27,9 @@ public class Ready {
 	public List<Entry> committedEntries;			// 已经被 committed 的 raft log，可以 apply 到 State Machine 了
 	public HashMap<Long,List<Message>> messages;	// 待发送给其他节点的消息，需要在 entries 保存成功之后才能发送，但对于 leader来说，可以先发送 messages，在进行 entries 的保存
 
-
 	//
 	// TODO : 此处待优化，该值应该是对应每个节点来说，而不应该是全量
-	public static final int MAX_BATCH_SIZE = (int) Math.round( 3.5 * 1024 * 1024 ); // 3.5MB
+	public static final int MAX_BATCH_SIZE = (int) Math.round( 3 * 1024 * 1024 ); // 3MB
 	public static final int MAX_BATCH_COUNT = 30000;
 	
 	public Ready(Raft raft, SoftState prevSs, HardState prevHs, long sinceIndex) throws RaftException {
@@ -48,7 +47,6 @@ public class Ready {
 				Message msg =  raft.getMsgs().poll();
 				if ( msg == null )
 					break;
-				
 				//
 				if ( msg.getTo() != Const.None && msg.getTo() != raft.getId() ) {
 					//
