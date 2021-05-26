@@ -1,21 +1,19 @@
 package com.feeyo.raft.config.loader;
 
-import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.feeyo.raft.Config;
 import com.feeyo.raft.config.RaftGroupConfig;
-import com.feeyo.raft.group.proto.Raftgrouppb.Region;
 
 public final class RaftGroupConfigLoader {
 	//
 	private static Logger LOGGER = LoggerFactory.getLogger(RaftGroupConfigLoader.class);
 	//
-	public static RaftGroupConfig load(String raftUri, String regionUri) {
+	public static RaftGroupConfig load(String uri) {
 		try {
-			Map<String, String> propertyMap = ConfigLoader.getPropertyMapOfXml(raftUri);
+			Map<String, String> propertyMap = ConfigLoader.getPropertyMapOfXml(uri);
 			Config c = ConfigLoader.parseConfig(propertyMap);
 			int tpCoreThreads = ConfigLoader.parseIntValue(propertyMap, "tpCoreThreads", 5);
 			int tpMaxThreads = ConfigLoader.parseIntValue(propertyMap, "tpMaxThreads", 50);
@@ -25,9 +23,6 @@ public final class RaftGroupConfigLoader {
 			raftGroupConfig.setTpCoreThreads(tpCoreThreads);
 			raftGroupConfig.setTpMaxThreads(tpMaxThreads);
 			raftGroupConfig.setTpQueueCapacity(tpQueueCapacity);
-			//
-			List<Region> regions = RegionLoader.load(regionUri);
-			raftGroupConfig.setRegions(regions);
 			return raftGroupConfig;
 			
 		} catch (Exception e) {
@@ -35,7 +30,5 @@ public final class RaftGroupConfigLoader {
 		}
 		return null;
 	}
-	
-	
 
 }
