@@ -3,6 +3,8 @@ package com.feeyo.raft;
 import com.feeyo.raft.proto.Raftpb.Message;
 
 /** 
+ * @see https://github.com/etcd-io/etcd/blob/main/raft/node.go
+ * 
  * @author zhuam
  */
 public interface RaftNodeListener {
@@ -11,7 +13,7 @@ public interface RaftNodeListener {
 	void onReadIndex(String rctx, long index); 	// StepFollower(MsgReadIndex消息) & StepLeader(MsgReadIndexResp/MsgHeartbeatResponse消息) 触发
 	void onAppliedIndex(long appliedIndex); // applied 索引更新
 	//
-	void onReceivedHeartbeat(Message msg);	// follower & candidate 接收了 Leader 的 MsgHeartbeat
+	void onReceivedHeartbeat(Message msg);	// follower & candidate 接收了 leader 的 MsgHeartbeat
 	void onProposalForwarding(Message msg); // follower 收到客户端 MsgPropose 需要转发
 	void onSendSnapshots(Message msg); // leader 发送快照 MsgSnapshot
 	//
