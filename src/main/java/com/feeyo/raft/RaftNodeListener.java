@@ -10,7 +10,7 @@ import com.feeyo.raft.proto.Raftpb.Message;
 public interface RaftNodeListener {
 	
 	void onStateChange(long id, StateType newStateType, long leaderId);  // raft 状态变更
-	void onReadIndex(String rctx, long index); 	// StepFollower(MsgReadIndex消息) & StepLeader(MsgReadIndexResp/MsgHeartbeatResponse消息) 触发
+	void onReadIndex(String rctx, long index); 	// StepFollower(MsgReadIndex) & StepLeader(MsgReadIndexResp/MsgHeartbeatResponse) 触发
 	void onAppliedIndex(long appliedIndex); // applied 索引更新
 	//
 	void onReceivedHeartbeat(Message msg);	// follower & candidate 接收了 leader 的 MsgHeartbeat
