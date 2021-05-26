@@ -12,9 +12,9 @@ public final class RaftConfigLoader {
 	//
 	private static Logger LOGGER = LoggerFactory.getLogger(RaftConfigLoader.class);
 	//
-	public static RaftConfig load(String raftUri) {
+	public static RaftConfig load(String uri) {
 		try {
-			Map<String, String> propertyMap = ConfigLoader.getPropertyMapOfXml(raftUri);
+			Map<String, String> propertyMap = ConfigLoader.getPropertyMapOfXml(uri);
 			Config c = ConfigLoader.parseConfig(propertyMap);
 			int tpCoreThreads = ConfigLoader.parseIntValue(propertyMap, "tpCoreThreads", 5);
 			int tpMaxThreads = ConfigLoader.parseIntValue(propertyMap, "tpMaxThreads", 50);
