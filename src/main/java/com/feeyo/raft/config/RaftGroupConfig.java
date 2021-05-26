@@ -60,7 +60,6 @@ public class RaftGroupConfig {
 		this.cfg.setLearners(learners);
 	}
 	//
-	// raft需要的配置
 	public Config getCfg() {
 		return cfg;
 	}

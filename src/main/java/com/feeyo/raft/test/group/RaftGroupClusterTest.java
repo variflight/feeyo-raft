@@ -42,7 +42,6 @@ import com.google.protobuf.ByteString;
 public class RaftGroupClusterTest {
 	
 	private static RaftGroupServer make(Peer local, PeerSet peerSet, List<Region> regions) {
-		//
 		Config c = new Config();
 		c.setElectionTick(50);
 		c.setHeartbeatTick(10);
@@ -60,8 +59,7 @@ public class RaftGroupClusterTest {
 		c.setReadOnlyOption(ReadOnlyOption.Safe);
 		c.setLinearizableReadOption(LinearizableReadOption.FollowerRead);
 		c.setDisableProposalForwarding(false);
-		
-		
+		//
 		RaftGroupConfig raftGroupCfg = new RaftGroupConfig(c);
 		raftGroupCfg.setLocalPeer(local);
 		raftGroupCfg.setPeerSet(peerSet);
@@ -71,16 +69,13 @@ public class RaftGroupClusterTest {
 		raftGroupCfg.setTpQueueCapacity(2500);
 		//
 		return new RaftGroupServer(raftGroupCfg, new RaftGroupStateMachineAdapter(local.getId(), peerSet){
-			
 			@Override
 			public boolean apply(long regionId, byte[] data, long committed) {
-				//
 	            List<ProposeCmd> commands = protobufDecoder.decode(data);
                 if (commands == null) {
                     System.out.println("Empty data " + Arrays.toString(data));
                     return true;
                 }
-                
                 //
                 System.out.println("Region " + regionId + " "+  commands.size());
                 for(int i = 0; i < commands.size(); i++) {
@@ -88,7 +83,6 @@ public class RaftGroupClusterTest {
 	                KeyValue keyValue = msg.getKv(0);
 	                System.out.println("Region " + regionId + " "+ keyValue.getKey().toStringUtf8() + " " + keyValue.getValue().toStringUtf8());
                 }
-                
 				return true;
 			}
 
@@ -112,14 +106,12 @@ public class RaftGroupClusterTest {
 				.setConfVer(confVer) //
 				.setVersion(version) //
 				.build(); //
-		
 		Region region = Region.newBuilder()	//
 				.setId(id)	//
 				.setStartKey(ByteString.copyFrom(startKey) )	//
 				.setEndKey( ByteString.copyFrom(endKey) )	//
 				.setRegionEpoch(regionEpoch)	//
 				.build();	//
-		
 		return region;
 	}
 	
@@ -128,18 +120,13 @@ public class RaftGroupClusterTest {
 	private static final ProtobufDecoder<ProposeCmd> protobufDecoder = new ProtobufDecoder<>(ProposeCmd.getDefaultInstance(), true);
 	
 	private static RaftGroupMessage createMessage(long to, List<KeyValue> kvs) {
-
-
 		List<Entry> entries = new ArrayList<>();
-		
 		for(KeyValue kv: kvs) {
-			//
 			ProposeCmd cmd = ProposeCmd.newBuilder() //
 					.addKv(kv)
 					.build();
-	
+			//
 			byte[] data = protobufEncoder.encode(cmd);
-			
 			Entry entry = Entry.newBuilder() //
 					.setEntryType(EntryType.EntryNormal) //
 					.setData(ByteString.copyFrom(data)) //
@@ -154,7 +141,6 @@ public class RaftGroupClusterTest {
 				.setFrom(Const.None) //
 				.addAllEntries( entries ) //
 				.build(); 
-
 		//
 		return RaftGroupMessage.newBuilder() //
 				.setRegionId(11) //
@@ -187,9 +173,7 @@ public class RaftGroupClusterTest {
 				
 				//
 				if ( leaderServer != null ) {
-					
 					List<KeyValue> kvs = new ArrayList<>();
-
 					for(int i = 0; i < 10; i++) {
 						byte[] key = "hello".getBytes();
 						byte[] value = (" world_" +i).getBytes();
@@ -201,7 +185,6 @@ public class RaftGroupClusterTest {
 						//
 						kvs.add(keyValue);
 					}
-					
 					RaftGroupMessage msg = createMessage(leaderId, kvs);
 					Reply reply = leaderServer.getRaftCaller().sync( msg );
 					System.out.println("reply=" + reply.code + ", " + new String(reply.msg));
@@ -247,7 +230,6 @@ public class RaftGroupClusterTest {
 		server1.start(2);
 		server2.start(2);
 		server3.start(2);
-		
 		//
 		continueWrite( new RaftGroupServer[]{ server1, server2, server3 });
 	}
