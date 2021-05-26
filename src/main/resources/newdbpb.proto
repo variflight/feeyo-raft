@@ -1,0 +1,28 @@
+syntax = "proto3";
+package raft;
+
+option java_package = "com.feeyo.raft.proto";
+option java_outer_classname = "Newdbpb";
+option optimize_for = SPEED;
+
+import public "raftpb.proto";
+
+enum Operation {
+	Insert = 0;
+	Delete = 1;
+    DDL = 2;
+}
+
+enum ColumnFamilyHandle {
+	DefaultCfh = 0;
+	WriteCfh = 1;
+	LockCfh = 2;
+    RawCfh = 3;
+    RawKvCfh = 4; 	// key/value
+}
+
+message ProposeCmd {
+	Operation op = 1;
+	ColumnFamilyHandle cfh = 2;
+    repeated KeyValue kv = 3;
+}

@@ -1,0 +1,11 @@
+syntax = "proto3";
+package raft;
+
+option java_package = "com.feeyo.raft.storage.wal.proto";
+
+// WAL快照
+message Snapshot {
+	uint64 term = 1;
+    uint64 index = 2;
+}
+

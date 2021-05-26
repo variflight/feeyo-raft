@@ -1,0 +1,24 @@
+syntax = "proto3";
+package raft;
+
+option java_package = "com.feeyo.raft.proto";
+option java_outer_classname = "Btreepb";
+option optimize_for = SPEED;
+
+import public "raftpb.proto";
+
+enum Operation {
+	Insert = 0;
+	Delete = 1;
+}
+
+message Element {
+	string key = 1;
+	bytes value = 2;
+	string category = 3;
+}
+
+message ElementCmd {
+	Operation op = 1;
+    repeated Element ele = 2;
+}
