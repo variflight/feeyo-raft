@@ -38,27 +38,20 @@ import com.feeyo.raft.util.ProtobufCodedOutputUtil;
 //
 public class Wal {
 	
-	private static Logger LOGGER = LoggerFactory.getLogger( Wal.class );
-	
-	private int maxFileSize;
-	private String walDir;
-	
-	// 当前所有的WAL日志文件实例
-	private CopyOnWriteArrayList<AbstractLogFile> logFiles = new CopyOnWriteArrayList<AbstractLogFile>();
-	
-    // 记录当前快照数据。每次读取WAL文件时，并不会从头开始读取。而是根据这里的快照数据定位到位置。
- 	// Snapshot.Index记录了对应快照数据的最后一条entry记录的索引，而Snapshot.Term记录的是对应记录的任期号。
-	private Walpb.Snapshot start;
-	
-	// 每次写入entryType类型的记录之后，都需要追加一条stateType类型的数据，state成员就用于存储当前状态
-	private HardState state = null;
-	
-	// 用于连续性校验
-	private Entry lastWroteEntry = null;
-	
+	private static Logger LOGGER = LoggerFactory.getLogger(Wal.class);
+	//
 	private final ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
 	private final Lock writeLock = this.readWriteLock.writeLock();
 	private final Lock readLock = this.readWriteLock.readLock();
+	//
+	private int maxFileSize;
+	private String walDir;
+	//
+	private CopyOnWriteArrayList<AbstractLogFile> logFiles = new CopyOnWriteArrayList<AbstractLogFile>(); // 所有日志文件
+	private Walpb.Snapshot start; // 每次读取WAL文件时，并不会从头开始读取。而是根据这里的快照数据定位到位置。 Snapshot.Index记录了对应快照数据的最后一条entry记录的索引，而Snapshot.Term记录的是对应记录的任期号。
+	private HardState state = null; // 每次写入entryType类型的记录之后，都需要追加一条stateType类型的数据，state成员就用于存储当前状态
+	private Entry lastWroteEntry = null; // 用于连续性校验
+
 	//
 	public Wal(String path, int maxFileSize, boolean syncLog) {	
 		this.maxFileSize = maxFileSize;
@@ -66,14 +59,12 @@ public class Wal {
 		File f = new File(walDir);
 		if (!f.exists()) 
 			f.mkdirs();
-		
 		// default walSnap 
 		start = Walpb.Snapshot.newBuilder() //
 				.setIndex(0) //
 				.setTerm(0) //
 				.build(); //
 	}
-	
 	//
 	public void stop() {
 		// force flush disk
@@ -83,12 +74,10 @@ public class Wal {
     		LOGGER.warn("flush disk, name={}", logFile.toString());
     	}
 	}
-	
 	//
 	public Walpb.Snapshot getStart() {
 		return start;
 	}
-	
 	//
 	// readAll负责从当前WAL文件目录读取所有的记录
 	public Pair<List<Entry>, HardState> readAll(long snapshotIndex) throws Throwable {
@@ -127,8 +116,8 @@ public class Wal {
 				logFiles.add( logFile );
 			}
 			//
-			if ( Util.isNotEmpty( entries ) ) 
-				lastWroteEntry = entries.get( entries.size() - 1 );
+			if (Util.isNotEmpty(entries))
+				lastWroteEntry = entries.get(entries.size() - 1);
 			//
 			return Pair.create(entries, lastHs);
 			
@@ -156,8 +145,8 @@ public class Wal {
 			//
 			long t3 = TimeUtil.currentTimeMillis();
 			long elapsed =  t3 - t1;
-			if ( elapsed > 250 ) {
-				LOGGER.info("wal save slow, t3-t1={}, t3-t2={}, t2-t1={}", (t3-t1), (t3-t2), (t2-t1) );
+			if (elapsed > 250) {
+				LOGGER.info("wal save slow, t3-t1={}, t3-t2={}, t2-t1={}", (t3 - t1), (t3 - t2), (t2 - t1));
 			}
 
 		} catch (Exception e) {
@@ -197,9 +186,9 @@ public class Wal {
 				buffer = ProtobufCodedOutputUtil.msgToBuffer(entry);
 				buffer.flip();
 				//
-				AbstractLogFile logFile = getOrCreateLogFile( buffer.limit() );
-				logFile.append(AbstractLogFile.DataType.ENTRY, buffer );
-				logFile.setLastLogIndex( entry.getIndex() );
+				AbstractLogFile logFile = getOrCreateLogFile(buffer.limit());
+				logFile.append(AbstractLogFile.DataType.ENTRY, buffer);
+				logFile.setLastLogIndex(entry.getIndex());
 				lastWroteEntry = entry;
 				nextWrittenIdx++;
 			} finally {

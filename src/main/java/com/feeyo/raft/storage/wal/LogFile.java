@@ -55,7 +55,6 @@ public class LogFile extends AbstractLogFile  {
 		this.path = path;
 		this.firstLogIndex = firstLogIndex;
 		this.lastLogIndex = lastLogIndex;
-		//
 		this.fileName = AbstractLogFile.generateFileName(firstLogIndex, lastLogIndex);
 		this.fileSize = fileSize;
 		this.isWritable = isWritable;
@@ -113,11 +112,11 @@ public class LogFile extends AbstractLogFile  {
         						throw new Errors.RaftException(String.format("load file err, fileName=%s", fileName));
         					//
         					// 可写情况下，需要通过 openAtIndex 恢复 lastLogIndex 的值
-        					if ( isWritable )
-        						lastLogIndex = entry.getIndex();
-        					//
-        					// skip entry
-        					if ( index != -1 && entry.getIndex() <= index ) 
+							if (isWritable)
+								lastLogIndex = entry.getIndex();
+							//
+							// skip entry
+							if (index != -1 && entry.getIndex() <= index)
         						continue;
         					// 
         					entries.add( entry );
@@ -131,7 +130,6 @@ public class LogFile extends AbstractLogFile  {
                 	} else {
                 		break;
                 	}
-                	
             	} else {
             		break;
             	}
@@ -200,7 +198,6 @@ public class LogFile extends AbstractLogFile  {
 			//
 			// 如果之前文件已关闭，此处需要重新打开
 			if (isClosed.get()) {
-				//
 				this.isWritable = true;
 				this.lastLogIndex = 0;
 				//
@@ -274,7 +271,6 @@ public class LogFile extends AbstractLogFile  {
 					break;
 				}
 			}
-
 		} catch (IOException e) {
 			LOGGER.error("truncate err:", e);
 		}
@@ -302,13 +298,13 @@ public class LogFile extends AbstractLogFile  {
     //
  	public synchronized int flush() {
         boolean isFlush = wrotePos.get() > committedPos.get();
-        if ( isFlush ) {
-        	 int value = wrotePos.get();
+		if (isFlush) {
+			int value = wrotePos.get();
              try {
                  // We only append data to fileChannel or mappedByteBuffer, never both.
-                 if ( this.fc.position() != 0) {
-                     this.fc.force(false);
-                 } else {
+					if (this.fc.position() != 0) {
+						this.fc.force(false);
+					} else {
                      this.mappedByteBuffer.force();
                  }
                  this.committedPos.set(value);
@@ -326,7 +322,6 @@ public class LogFile extends AbstractLogFile  {
 			return;
 		//
 		isWritable = false;
-		//
 		flush();
 		MappedByteBufferUtil.clean(this.mappedByteBuffer);
 		IOUtil.closeQuietly(fc);

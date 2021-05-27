@@ -15,17 +15,16 @@ public abstract class AbstractLogFile {
 	protected String path; 						// 存储路径
 	protected String fileName; 					// 文件名
 	protected int fileSize; 					// 文件尺寸
-	protected File file;
-	//
+	protected File file;						//
 	protected volatile boolean isWritable; 		// 是否可写
-	protected long firstLogIndex;
+	protected long firstLogIndex;				//
 	protected long lastLogIndex;
 	//
-	public abstract LogMetadata openAtIndex(long index) throws RaftException;  // 该用于寻找snapshot 以后的日志文件并打开
+	public abstract LogMetadata openAtIndex(long index) throws RaftException;  // 寻找snapshot 以后的日志文件并打开
 	public abstract boolean append(int dataType, byte[] data);	// 追加
 	public abstract boolean append(int dataType, ByteBuffer dataBuffer);
 	public abstract void truncate(long index);	// 从给定索引中删除文件中的数据
-	public abstract void cut();	// 进行WAL文件切换(TODO: 关闭当前WAL日志，创建新的WAL日志，继续用于日志追加)
+	public abstract void cut();	// 文件切换(TODO: 关闭当前file，重命名)
 	//
 	public abstract int remainingBytes(int size);
 	public abstract int flush();
@@ -47,9 +46,7 @@ public abstract class AbstractLogFile {
 	public void setLastLogIndex(long lastLogIndex) {
 		this.lastLogIndex = lastLogIndex;
 	}
-
 	///
-	//
 	public static AbstractLogFile create(String walDir, long firstLogIndex, long lastLogIndex, int fileSize, boolean isWritable)
 			throws IOException {
 		AbstractLogFile logFile = new LogFile(walDir, firstLogIndex, lastLogIndex, fileSize, isWritable);
