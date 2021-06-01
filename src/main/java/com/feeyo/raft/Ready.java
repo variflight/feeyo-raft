@@ -32,7 +32,8 @@ public class Ready {
 	public static final int MAX_BATCH_COUNT = 30000;
 	
 	public Ready(Raft raft, SoftState prevSs, HardState prevHs, long sinceIndex) throws RaftException {
-		if ( !raft.getMsgs().isEmpty() ) {
+		//
+		if (!raft.getMsgs().isEmpty()) {
 			this.messages = new HashMap<Long, List<Message>>();
 			long batchSize = 0;	// 攒批
 			int batchCount = 0;
@@ -64,7 +65,7 @@ public class Ready {
 		this.hs = raft.isChangedHardState(prevHs) ? raft.getHardState() : prevHs;
 		this.unstableSnapshotMeta = raft.getRaftLog().getUnstableSnapshotMetadata();	
 		this.unstableEntries = raft.getRaftLog().unstableEntries();
-		this.committedEntries = raft.getRaftLog().nextEntriesSince( sinceIndex );
+		this.committedEntries = raft.getRaftLog().nextEntriesSince(sinceIndex);
 	}
 	//
 	// appliedCursor extracts from the Ready the highest index the client has

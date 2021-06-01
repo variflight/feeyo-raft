@@ -252,8 +252,8 @@ public class Raft {
 		//  Because step_follower forward MsgTransferLeader Msg to leader，but step_leader use msg.from to leadTransferee
 		//
 		Message.Builder builder = msg.toBuilder();
-		if ( msg.getMsgType() != MessageType.MsgTransferLeader)
-			builder.setFrom( id );  //
+		if (msg.getMsgType() != MessageType.MsgTransferLeader)
+			builder.setFrom(id); //
 		//
 		if (msg.getMsgType() == MessageType.MsgRequestVote 
 				|| msg.getMsgType() == MessageType.MsgRequestPreVote

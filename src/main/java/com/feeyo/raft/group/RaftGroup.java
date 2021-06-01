@@ -225,7 +225,6 @@ public class RaftGroup extends RaftNodeAdapter {
     public void destory() {
         stop();
     }
-
     //
     // ------------------------------------ passive ------------------------------------------
     private AtomicBoolean isPassiveLoop = new AtomicBoolean( false );
@@ -234,7 +233,6 @@ public class RaftGroup extends RaftNodeAdapter {
     void passiveLoop() throws Throwable {
 		if (!isPassiveLoop.compareAndSet(false, true))
             return;
-        //
         try {
             // internal logical clock by a single tick
             long currentMs = TimeUtil.currentTimeMillis();
@@ -412,14 +410,9 @@ public class RaftGroup extends RaftNodeAdapter {
             /* ignore */
         }
         //
-        // NewReady Statistics
-        raftStatistics.update( RaftStatistics.ON_READY, TimeUtil.since(beginMillis) );
-
-        // Maybe trigger local snapshot
-        this.maybeTriggerLocalSnapshot();
-
-        // Commit ready
-        this.commitReady(ready);
+        raftStatistics.update(RaftStatistics.ON_READY, TimeUtil.since(beginMillis)); // NewReady Statistics
+        this.maybeTriggerLocalSnapshot();   // Maybe trigger local snapshot
+        this.commitReady(ready);  // Commit ready
     }
 
     //
@@ -570,7 +563,6 @@ public class RaftGroup extends RaftNodeAdapter {
                     }
                 }
             });
-
         } catch (Throwable e) {
             getCallbackRegistry().notifyCallbacks(cbKey, Callback.Action.Error);
             LOGGER.error("local_step err: from={}, type={}, size={}, ex={} ",
@@ -635,7 +627,6 @@ public class RaftGroup extends RaftNodeAdapter {
 			raft.getRaftLog().setApplied(newAppliedIndex);
         }
     }
-
     //
     private Entry newConfChange(ConfChangeType type, Peer peer) {
         ConfChange cc = ConfChange.newBuilder()
@@ -690,7 +681,6 @@ public class RaftGroup extends RaftNodeAdapter {
         }
         return isChanged;
     }
-
     //
     // Apply remote snapshot to state machine
     protected void applySnapshotToStateMachine(SnapshotMetadata meta) throws RaftException {
@@ -720,7 +710,6 @@ public class RaftGroup extends RaftNodeAdapter {
                         LOGGER.warn("apply snapshot, {} {}", fileName, seqNo);
                 }
             }
-            //
         } finally {
 			IOUtil.closeQuietly(snapReadable);	// 关闭
             snapshotter.moveFile(snapReadable); // 转移远程快照目录至本地快照目录
@@ -728,13 +717,11 @@ public class RaftGroup extends RaftNodeAdapter {
 			raft.getRaftLog().getStorage().applySnapshotMetadata(meta);
         }
     }
-
     //
     // 从 committed entries 中提取可 apply 至状态机的 entries
     protected List<Entry> entriesToApply(List<Entry> ents) throws RaftException {
         if ( Util.isEmpty( ents ) )
             return ents;
-        //
         long firstIdx = ents.get(0).getIndex();
         if( firstIdx > raft.getRaftLog().getApplied() + 1)
             throw new Errors.RaftException(String.format("first index of committed entry[%s] should <= progress.appliedIndex[%s]+1", 
@@ -796,7 +783,6 @@ public class RaftGroup extends RaftNodeAdapter {
 
     @Override
     public void onAppliedIndex(final long appliedIndex) {
-        // Asynchronous
         try {
             this.raftGroupSrv.getNotifyTpExecutor().execute( new Runnable() {
                 @Override
@@ -976,7 +962,6 @@ public class RaftGroup extends RaftNodeAdapter {
 			gMessages.add(toGroupMessage(msg));
         return gMessages;
     }
-    
     ///
 	@Override
 	public Peer getPeer() {

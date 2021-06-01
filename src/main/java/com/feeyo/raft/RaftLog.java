@@ -130,7 +130,6 @@ public class RaftLog {
 			long index = this.unstable.maybeFirstIndex();
 			if (index == Const.ZERO_IDX) 
 				index = this.storage.firstIndex();
-			//
 			return index;
 		} finally {
 			readLock.unlock();
@@ -164,7 +163,7 @@ public class RaftLog {
 	 */
 	private long findConflict(List<Entry> ents) throws RaftException {
 		// 遍历传入的ents数组
-		for (Entry ent : ents) {
+		for (Entry ent: ents) {
 			// 找到第一个任期号不匹配的，即当前在raftLog存储的该索引数据的任期号，不是ent数据的任期号
 			if (!this.matchTerm(ent.getIndex(), ent.getTerm())) {
 				if (ent.getIndex() <= lastIndex()) {
@@ -452,15 +451,12 @@ public class RaftLog {
 	public List<Entry> nextEntries() throws RaftException {
 		return this.nextEntriesSince( applied );
 	}
-	
-	// Returns any entries since the a particular index.
 	//
+	// Returns any entries since the a particular index.
 	public List<Entry> nextEntriesSince(long sinceIndex) throws RaftException {
-		// 首先得到 applied和 firstIndex的最大值
-		long offset = Math.max(sinceIndex + 1, this.firstIndex());
-		if ( this.committed + 1 > offset) {
-			// 如果commit索引比前面得到的值还大，说明还有没有commit了但是还没apply的数据，将这些数据返回
-			return this.slice(offset, this.committed + 1, maxNextEntsSize);
+		long offset = Math.max(sinceIndex + 1, this.firstIndex()); // 首先得到 applied和 firstIndex的最大值
+		if (this.committed + 1 > offset) {
+			return this.slice(offset, this.committed + 1, maxNextEntsSize); 
 		}
 		return null;
 	}
@@ -587,8 +583,7 @@ public class RaftLog {
 			if (low < offset ) {
 				try {
 					// low 小于 unstable 的 offset，说明前半部分在持久化的storage中
-					//
-					// 注意传入storage.getEntries 的 high 参数取 high 和 unstable offset的较小值
+					// (TODO: 注意传入storage.getEntries 的 high 参数取 high 和 unstable offset的较小值)
 					entries = this.storage.getEntries(low, Math.min(high, offset), maxSize);
 					if (entries == null) 
 						return Collections.emptyList();
@@ -630,9 +625,7 @@ public class RaftLog {
 	public void restore(SnapshotMetadata meta) {
 		writeLock.lock();
 		try {
-			LOGGER.info("log [{}] starts to restore snapshot [index:{}, term:{}]",  
-					toString(), meta.getIndex(), meta.getTerm());
-			//
+			LOGGER.info("log [{}] starts to restore snapshot [index:{}, term:{}]", toString(), meta.getIndex(), meta.getTerm());
 			this.committed = meta.getIndex();
 			this.unstable.restore( meta );
 		} finally {
