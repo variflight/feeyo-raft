@@ -37,6 +37,14 @@ This raft implementation also includes a few optional enhancements:
 
 ## Usage
 
+```
+	<dependency>
+	  <groupId>com.github.variflight</groupId>
+	  <artifactId>feeyo-raft</artifactId>
+	  <version>0.1.0</version>
+	</dependency>
+```
+
 How to use a single raft
 
 ```
