@@ -90,6 +90,7 @@ public class RaftGroupClusterTest2 {
     public static void main(String[] args) throws Throwable {
         //
         BufferPool bufferPool = new BucketBufferPool(1024 * 1024 * 40, 1024 * 1024 * 80, new int[]{1024});
+        
 
         //
         new NetSystem(bufferPool, ExecutorUtil.create("BusinessExecutor-", 2), //
