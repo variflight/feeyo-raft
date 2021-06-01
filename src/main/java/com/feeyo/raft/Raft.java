@@ -44,39 +44,24 @@ public class Raft {
 	volatile long id;	// 节点的 id
 	volatile long term;	// 任期号
 	volatile long vote; // 投票给哪个节点id
-	
-	boolean isLearner;
+	boolean isLearner; // 
 	Map<Long, Boolean> votes; // 该map存放哪些节点投票给了本节点
-	RaftLog raftLog;		// the log
+	RaftLog raftLog; // the log
 	
-	private int maxInflight;
-	private long maxMsgSize;
-	
+	private int maxInflight;  // 限制复制时候最大的 in-flight 的 message 的数量
+	private long maxMsgSize;  // 限制每次发送的最大 message size
+	//
 	ProgressSet prs;
 	volatile StateType state;
 	private ConcurrentLinkedQueue<Message> msgs;
-	
-	// the leader id
-	volatile long leaderId;
-	
-	// leadTransferee is id of the leader transfer target when its value is not zero.
-	// Follow the procedure defined in raft thesis 3.10.
+	// 
+	volatile long leaderId; // the leader id
 	volatile long leadTransferee;	// leader转让的目标节点id
-	
-	// Only one conf change may be pending (in the log, but not yet applied) at a time. This is enforced via pendingConfIndex, 
-	// which is set to a value >= the log index of the latest pending configuration change (if any). 
-	// Config changes are only allowed to be proposed if the leader's applied index is greater than this value
 	volatile long pendingConfIndex; // 标识当前还有没有applied的配置
 	
 	ReadOnly readOnly;
-	
-	// number of ticks since it reached last electionTimeout when it is leader or candidate.
-    // number of ticks since it reached last electionTimeout or received a valid message from current leader when it is a follower.
-	volatile int electionElapsed;
-	
-	// number of ticks since it reached last heartbeatTimeout.
-    // only leader keeps heartbeatElapsed.
-	volatile int heartbeatElapsed;
+	volatile int electionElapsed; //
+	volatile int heartbeatElapsed; // 
 	//
 	boolean checkQuorum;	// 标记leader是否需要检查集群中超过半数节点的活跃性，如果在选举超时内没有满足该条件，leader切换到follower状态
 	private boolean preVote; // 预投票
@@ -85,28 +70,16 @@ public class Raft {
 	volatile int heartbeatTimeout;
 	volatile int electionTimeout;
 	volatile int randomizedElectionTimeout; // 一个随机数，介于[minElectionTimeout, maxElectionTimeout - 1] 之间. 当raft将其状态更改为follower或candidate时，它将被重置
-	//
 	private int minElectionTimeout;
 	private int maxElectionTimeout;
 	
 	boolean disableProposalForwarding;
-	//
-	private Object _requestVoteLock = new Object();
 	// 
 	RaftNodeListener raftNodeListener; 
 	//
-	// 逆序排列
-	private Comparator<Long> reverseComparator = new Comparator<Long>() {
-		@Override
-		public int compare(Long o1, Long o2) {
-			if(o2 == null)
-				return -1;
-			return o2.compareTo(o1);
-		}
-	};
-	
+	private Object _requestVoteLock = new Object();
+	//
 	public Raft(Config cfg, Storage storage, RaftNodeListener listener) throws RaftException {
-		//
 		// raft configure validate
 		cfg.validate();
 		//
@@ -508,12 +481,19 @@ public class Raft {
 		}
 	}
 	
-	// maybe_commit attempts to advance the commit index. Returns true if
-    // the commit index changed (in which case the caller should call r.bcast_append).
-	//
+	/**
+	 * 逆序排列
+	 */
+	private Comparator<Long> reverseComparator = new Comparator<Long>() {
+		@Override
+		public int compare(Long o1, Long o2) {
+			if(o2 == null)
+				return -1;
+			return o2.compareTo(o1);
+		}
+	};
 	/**
 	 * 尝试 commit 当前的日志，如果commit日志索引发生变化了就返回true (TODO：leader commit 核心环节)
-	 * 
 	 * @return
 	 * @throws RaftException
 	 */

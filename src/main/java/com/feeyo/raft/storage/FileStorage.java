@@ -165,7 +165,7 @@ public class FileStorage extends Storage {
 			int start = (int) (low - offset);
 			int end   = (int) (high - offset);
 			locations = Util.slice(entries, start, end);
-			List<Entry> ents = getEntriesByLocations(locations, maxSize );
+			List<Entry> ents = getEntriesByLocations(locations, maxSize);
 			return ents;
 			//return Util.limitSize(ents, maxSize);
         } finally {
