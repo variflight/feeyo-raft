@@ -21,15 +21,15 @@ import com.feeyo.raft.util.Util;
 public class RaftServerFastImpl extends RaftServer {
 	
 	private static Logger LOGGER = LoggerFactory.getLogger( RaftServerFastImpl.class );
-	
+
 	public RaftServerFastImpl(RaftConfig raftConfig, StateMachineAdapter stateMachine) {
 		super(raftConfig, stateMachine);
-		this.storage = new FileStorage( storageDir );
+		this.storage = new FileStorage(storageDir);
 	}
-	
+
 	@Override
 	public void start(int reactorSize) throws Throwable {
-		super.start( reactorSize );
+		super.start(reactorSize);
 	}
 	
 	@Override
@@ -38,7 +38,7 @@ public class RaftServerFastImpl extends RaftServer {
 	}
 	//
 	private void bcastMessages(List<Message> messages) {
-		if ( Util.isEmpty( messages ) )
+		if (Util.isEmpty(messages))
 			return;
 		//
 		// metric counter
@@ -73,7 +73,7 @@ public class RaftServerFastImpl extends RaftServer {
 		final CountDownLatch latch = new CountDownLatch( parallelNum );
 		//
 		// for leader
-		if ( isLeader ) {
+		if (isLeader) {
 			//
 	    	// Batch and Pipeline
 			if ( ready.messages != null && !ready.messages.isEmpty()) {

@@ -108,12 +108,12 @@ public class RaftServerDefaultImpl extends RaftServer {
 	}
 	//
     private void bcastMessages(List<Message> messages)  {
-    	if (  Util.isNotEmpty( messages ) ) {
-    		// metric counter
-			for(Message msg: messages)
+		if (Util.isNotEmpty(messages)) {
+			// metric counter
+			for (Message msg : messages)
 				raftStatistics.inc(msg);
-    		// batch
-    		transportClient.syncBatchPost( messages );
-    	}
+			// batch
+			transportClient.syncBatchPost(messages);
+		}
     }
 }
