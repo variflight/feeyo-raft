@@ -203,11 +203,11 @@ public class LogFile extends AbstractLogFile  {
 				//
 				String newFileName = AbstractLogFile.generateFileName(firstLogIndex, lastLogIndex);
 				File newFile = new File(this.path, newFileName);
-				com.google.common.io.Files.move(file, newFile); // rename with Google Guava
+				FileUtils.moveFile(file, newFile);
 				//
 				this.file = newFile;
 				this.fileName = newFileName;
-
+				//
 				// reopen
 				try {
 					this.fc = new RandomAccessFile(this.file, "rw").getChannel();
@@ -284,7 +284,7 @@ public class LogFile extends AbstractLogFile  {
 			//
 			String newFileName = AbstractLogFile.generateFileName(firstLogIndex, lastLogIndex);
 			File newFile = new File(path, newFileName);
-			com.google.common.io.Files.move(file, newFile);
+			FileUtils.moveFile(file, newFile);
 			LOGGER.info("cut file: old={} to new={}", fileName, newFileName);
 			//
 			this.file = newFile;

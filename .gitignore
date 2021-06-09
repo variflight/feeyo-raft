@@ -2,3 +2,4 @@
 .settings/
 .classpath
 .project
+/pom_release.xml
