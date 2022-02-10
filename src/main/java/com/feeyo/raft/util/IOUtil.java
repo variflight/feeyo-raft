@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 public class IOUtil {
 	
-	private static final Logger LOGGER = LoggerFactory.getLogger(Util.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(IOUtil.class);
 	
     /**
      * Close a closeable.
